@@ -1,0 +1,186 @@
+﻿<#@ template debug="true" hostSpecific="true"#>
+<#@ output extension=".genereted.cs" #>
+<#@ Assembly Name="System.Core.dll" #>
+<#@ Assembly Name="System.Xml.dll" #>
+<#@ Assembly Name="System.Xml.Linq.dll" #>
+<#@ Assembly Name="System.Windows.Forms.dll" #>
+<#@ assembly name="System.Data.dll" #>
+<#@ assembly name="$(SolutionDir)packages\Microsoft.AnalysisServices.11.0.2100.60\lib\net40\Microsoft.AnalysisServices.DLL" #> 
+<#@ Assembly Name="$(ProjectDir)$(OutDir)$(TargetFileName)" #>
+<#@ assembly Name = "$(SolutionDir)FunctionalUtilities\bin\Debug\FunctionalUtilities.dll" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Diagnostics" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Data" #>
+<#@ import namespace="System.Security.Cryptography.X509Certificates" #>
+<#@ import namespace="System.Xml.Linq" #>
+<#@ import namespace="System.Collections" #>
+<#@ import namespace="System.Collections.Generic" #> 
+<#@ import namespace="Microsoft.AnalysisServices" #>
+<#@ import namespace="FunctionalUtilities" #>
+// Generated Code 
+using LinqToDAX;
+using System;
+using TabularEntities;
+namespace AdventureWorks
+{
+	
+
+<#
+Server server = new Server();
+server.Connect("LDDEVCUBEDB2");
+const string ns = "{http://schemas.microsoft.com/ado/2008/09/edm}";
+const string bi = "{http://schemas.microsoft.com/sqlbi/2010/10/edm/extensions}";
+const string commandXml = @"
+    <Envelope xmlns='http://schemas.xmlsoap.org/soap/envelope/'>
+    <Body>
+    <Discover xmlns='urn:schemas-microsoft-com:xml-analysis'>
+    <RequestType>DISCOVER_CSDL_METADATA</RequestType>
+    <Restrictions>
+    <RestrictionList>
+    <CATALOG_NAME>AdventureWorks Tabular Model SQL 2012</CATALOG_NAME>
+    </RestrictionList>
+    </Restrictions>
+    <Properties>
+    <PropertyList>
+    <FORMAT>Tabular</FORMAT>
+    </PropertyList>
+    </Properties>
+    </Discover>
+    </Body>
+    </Envelope>";
+var xml = server.SendXmlaRequest(XmlaRequestType.Discover, new StringReader(commandXml));
+var doc =  XDocument.Load(xml);
+var assoc =
+    (from association in doc.Descendants(ns + "AssociationSet")
+        let ends = association.Descendants(ns + "End").ToArray()
+        select
+            new KeyValuePair<string, string>(ends[0].Attribute("EntitySet").Value,
+                ends[1].Attribute("EntitySet").Value)).Distinct().ToArray();
+var entities =
+                from element in doc.Descendants(ns + "EntitySet")
+                let name = element.Attribute("Name").Value
+                let refName = element.Descendants(bi + "EntitySet").First().Attribute("ReferenceName")
+                select
+                    new
+                    {
+
+                        Ref = refName != null ? refName.Value : name,
+                        Name = name
+
+                    };
+
+
+#>
+public class AdventureWorksContext
+{
+	
+<#
+foreach (var e in entities)
+{
+#>
+	public TabularTable<<#=ToIdentifier(e.Name)#>> <#=ToIdentifier(e.Name)#>Set { get; private set; } 
+<#
+}
+#>
+public AdventureWorksContext(string connectionString)
+{
+    var provider = new TabularQueryProvider(connectionString);
+    provider.Log += System.Console.WriteLine;
+<#
+    foreach (var e in entities)
+    {
+#>
+    this.<#=ToIdentifier(e.Name)#>Set = new TabularTable<<#=ToIdentifier(e.Name)#>>(provider);
+<#
+    }
+#>
+}
+}
+<#
+var q2 = doc.Descendants(ns + "EntityType");
+    foreach (var xElement in q2)
+    {
+        var tname = xElement.Attribute("Name").Value;
+        var refName = entities.Where(x => x.Name == tname).Select(x => x.Ref).First();
+#>
+[TabularTableMapping("'<#=refName#>'")]
+public class <#=ToIdentifier(tname)#> : ITabularData
+{
+<#
+    foreach (var descendant in xElement.Descendants(ns + "Property"))
+    {
+        if (descendant.Descendants(bi + "Property").Any())
+        {
+            var prop = descendant.Descendants(bi + "Property").First();
+            var name = prop.Attribute("ReferenceName") != null
+                ? prop.Attribute("ReferenceName").Value
+                : descendant.Attribute("Name").Value;
+            var type = descendant.Attribute("Type").Value;
+			//Stability="RowNumber"
+            var hidden = prop.Attribute("Stability") != null ? prop.Attribute("Stability").Value == "RowNumber" : false;
+            if (type != "Binary" && !hidden)
+            {
+#>
+[TabularMapping("'<#=refName #>'[<#=name#>]", "'<#=refName#>'")]
+public <#=type #> <#=ToIdentifier(descendant.Attribute("Name").Value)#> {get; set;}
+<#
+            }
+        }
+
+        if (descendant.Descendants(bi + "Measure").Any())
+        {
+            var measure = descendant.Descendants(bi + "Measure").First();
+#>
+[TabularMeasureMapping("[<#=measure.Attribute("ReferenceName").Value #>]")]
+public <#=descendant.Attribute("Type").Value #> <#=ToIdentifier(descendant.Attribute("Name").Value)#>()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[<#=measure.Attribute("ReferenceName").Value #>]")]
+public <#=descendant.Attribute("Type").Value #> <#=ToIdentifier(descendant.Attribute("Name").Value)#>(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+<#
+        }
+    }
+    foreach (var item in assoc.Where(x => x.Key == tname))
+    {
+#>
+public virtual <#=ToIdentifier(item.Value)#> Related<#=ToIdentifier(item.Value)#>{ get; set;}
+<#
+    }
+	#>
+}
+<#
+    }
+#>
+}
+<#+  
+// Insert any template procedures here
+private string ToIdentifier(string columnName)
+{
+    var c = columnName.TrimStart('[').TrimEnd(']').Replace(" ", "_").Replace("-", "_").Replace("__", "_");
+    if (c.Contains("_"))
+    {
+        var parts = c.Split('_');
+        if (parts.Count() > 1)
+        {
+            return parts.Select(s => Capitalize(s)).Aggregate((s1, s2) => s1 + s2);
+        }
+        return Capitalize(parts[0]);
+    }
+    return columnName;
+}
+
+    private string Capitalize(string input)
+    {
+        if (input == null || input.Length <= 1) return input;
+        var cs = input.ToLower();
+        var cap = cs[0].ToString().ToUpper();
+        return cap + cs.Substring(1);
+    }
+
+#>

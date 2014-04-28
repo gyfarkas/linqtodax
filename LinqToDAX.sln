@@ -1,0 +1,51 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30110.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinqToDAX.Query", "LinqToDAX\LinqToDAX.Query.csproj", "{EEB23168-2B8C-4ED2-81FD-1E9C072C9A4D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinqToDAX.TabularEntities", "TabularEntities\LinqToDAX.TabularEntities.csproj", "{430E6DB3-FADC-4018-BBCC-849DA31AA129}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionalUtilities", "FunctionalUtilities\FunctionalUtilities.csproj", "{1B04A807-ABE1-4FA5-8263-641C8933E706}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinqToDAX.Adventureworks", "Adventureworks\LinqToDAX.Adventureworks.csproj", "{C2E3B55E-9C8C-4A49-99AC-D7C097EE2536}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinqToDAX.UnitTests", "UnitTests\LinqToDAX.UnitTests.csproj", "{C8733262-FEC6-4985-801A-27D2FF1E5555}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{9B7547B4-DBDF-47E6-97A2-85C67DE6CAA9}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\packages.config = .nuget\packages.config
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EEB23168-2B8C-4ED2-81FD-1E9C072C9A4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEB23168-2B8C-4ED2-81FD-1E9C072C9A4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EEB23168-2B8C-4ED2-81FD-1E9C072C9A4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EEB23168-2B8C-4ED2-81FD-1E9C072C9A4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{430E6DB3-FADC-4018-BBCC-849DA31AA129}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{430E6DB3-FADC-4018-BBCC-849DA31AA129}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{430E6DB3-FADC-4018-BBCC-849DA31AA129}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{430E6DB3-FADC-4018-BBCC-849DA31AA129}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B04A807-ABE1-4FA5-8263-641C8933E706}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B04A807-ABE1-4FA5-8263-641C8933E706}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B04A807-ABE1-4FA5-8263-641C8933E706}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B04A807-ABE1-4FA5-8263-641C8933E706}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2E3B55E-9C8C-4A49-99AC-D7C097EE2536}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2E3B55E-9C8C-4A49-99AC-D7C097EE2536}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2E3B55E-9C8C-4A49-99AC-D7C097EE2536}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2E3B55E-9C8C-4A49-99AC-D7C097EE2536}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8733262-FEC6-4985-801A-27D2FF1E5555}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8733262-FEC6-4985-801A-27D2FF1E5555}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8733262-FEC6-4985-801A-27D2FF1E5555}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8733262-FEC6-4985-801A-27D2FF1E5555}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{EEB23168-2B8C-4ED2-81FD-1E9C072C9A4D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>LinqToDAX</RootNamespace>
+    <AssemblyName>LinqToDAX</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>BasicDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="QueryFormatter\DefineMeasuresBuilder.cs" />
+    <Compile Include="QueryFormatter\MeasureCollector.cs" />
+    <Compile Include="Query\DAXExpression\AllExpression.cs" />
+    <Compile Include="Query\DAXExpression\AllExpressionFactory.cs" />
+    <Compile Include="Query\DAXExpression\ColumnExpressionFactory.cs" />
+    <Compile Include="Query\BooleanConstantFinder.cs" />
+    <Compile Include="Query\DAXExpression\DAXExpression.cs" />
+    <Compile Include="Query\DAXExpression\DaxExpressionFactory.cs" />
+    <Compile Include="Query\DAXExpression\DAXExpressionVisitor.cs" />
+    <Compile Include="QueryFormatter\FilterVisitor.cs" />
+    <Compile Include="QueryFormatter\GenerateVisitor.cs" />
+    <Compile Include="Query\DAXExpression\FilterConditionVisitor.cs" />
+    <Compile Include="Query\Nominator.cs" />
+    <Compile Include="Query\Projection.cs" />
+    <Compile Include="Query\ProjectionBuilder.cs" />
+    <Compile Include="Query\ProjectionReader.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Query\Finder.cs" />
+    <Compile Include="Query\DAXExpression\TableExpression.cs" />
+    <Compile Include="Query\DAXExpression\TableFactory.cs" />
+    <Compile Include="Query\TabularEvaluator.cs" />
+    <Compile Include="QueryFormatter\XAggregationVisitor.cs" />
+    <Compile Include="TabularException.cs" />
+    <Compile Include="Query\TabularQueryBinder.cs" />
+    <Compile Include="Query\TabularQueryExtensions.cs" />
+    <Compile Include="QueryFormatter\TabularQueryFormatter.cs" />
+    <Compile Include="TabularQueryProvider.cs" />
+    <Compile Include="TabularTable.cs" />
+    <Compile Include="TypeSystem.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FunctionalUtilities\FunctionalUtilities.csproj">
+      <Project>{1b04a807-abe1-4fa5-8263-641c8933e706}</Project>
+      <Name>FunctionalUtilities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TabularEntities\LinqToDAX.TabularEntities.csproj">
+      <Project>{430e6db3-fadc-4018-bbcc-849da31aa129}</Project>
+      <Name>LinqToDAX.TabularEntities</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

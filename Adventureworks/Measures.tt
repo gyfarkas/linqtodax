@@ -1,0 +1,125 @@
+﻿<#@ template debug="true" hostSpecific="true"#>
+<#@ output extension=".genereted.cs" #>
+<#@ Assembly Name="System.Core.dll" #>
+<#@ Assembly Name="System.Xml.dll" #>
+<#@ Assembly Name="System.Xml.Linq.dll" #>
+<#@ Assembly Name="System.Windows.Forms.dll" #>
+<#@ assembly name="System.Data.dll" #>
+<#@ assembly name="$(SolutionDir)packages\Microsoft.AnalysisServices.11.0.2100.60\lib\net40\Microsoft.AnalysisServices.DLL" #> 
+<#@ Assembly Name="$(ProjectDir)$(OutDir)$(TargetFileName)" #>
+<#@ assembly Name = "$(SolutionDir)FunctionalUtilities\bin\Debug\FunctionalUtilities.dll" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Diagnostics" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Data" #>
+<#@ import namespace="System.Xml.Linq" #>
+<#@ import namespace="System.Collections" #>
+<#@ import namespace="System.Collections.Generic" #> 
+<#@ import namespace="Microsoft.AnalysisServices" #>
+<#@ import namespace="FunctionalUtilities" #>
+///Generated Code 
+using LinqToDAX;
+using TabularEntities;
+namespace AdventureWorks
+{
+	public static class Measures
+	{
+	<#
+	foreach (var measure in GetMeasures()) 
+	{        
+	#>
+	[TabularMeasureMapping("<#=measure.CalculationReference#>")]
+	public static <#=GetMeasureType(measure.FormatString)#> <#= toIdentifier(measure.CalculationReference)#>(this ITabularData table)
+	{
+		throw new System.NotImplementedException("This method is only available in a LinqToDAX Query");
+		
+	}
+	[TabularMeasureMapping("<#=measure.CalculationReference#>")]
+	public static <#=GetMeasureType(measure.FormatString)#> <#= toIdentifier(measure.CalculationReference)#>(this ITabularData table, bool filter)
+	{
+		throw new System.NotImplementedException("This method is only available in a LinqToDAX Query");
+		
+	}
+	<#
+	}
+	#>
+}
+}
+<#+  
+// Insert any template procedures here
+private string toIdentifier(string columnName)
+{
+	return 
+			columnName.TrimStart('[').TrimEnd(']').Replace(" ", "_")
+			    .Replace("-","_");
+				
+}
+
+private string GetFullName(string cname, string tname)
+{
+	return String.Format("{0}[{1}]",tname,cname);
+}
+
+private IEnumerable<CalculationProperty> GetMeasures()
+{
+		    Server server = new Server();
+            server.Connect("localhost");
+            Database db = server.Databases["AdventureWorks Tabular Model SQL 2012"];
+
+            var measures = db.Cubes[0].MdxScripts[0];
+
+            var c = measures.CalculationProperties.GetEnumerator();
+            while(c.MoveNext())
+            {
+                CalculationProperty cp = (CalculationProperty) c.Current;
+				if(!cp.CalculationReference.Contains("."))
+                {
+					yield return cp;
+				}
+                    
+            }
+}
+
+
+private CubeDimensionCollection GetDimensions()
+{
+		Server server = new Server();
+        server.Connect("localhost");
+        Database db = server.Databases["AdventureWorks Tabular Model SQL 2012"];
+		return db.Cubes[0].Dimensions ;
+}
+
+private Type tryConvert(Option<System.Data.OleDb.OleDbType> t)
+{
+	Type type = typeof(string);
+	if(t != null && t.IsSome)
+    {
+		
+		try
+		{
+			type = OleDbTypeConverter.Convert(t.Value);
+		}
+		catch
+		{
+
+		}
+		
+    }
+	if(type != null)
+		return type;
+	else 
+	{
+		return typeof(string);
+    }
+}
+
+private Type GetMeasureType(string formatString)
+{
+	if(formatString.Contains("$") || formatString.Contains("."))
+	{
+		return typeof(System.Decimal);
+	}
+	else return typeof(System.Int64);
+}
+#>
