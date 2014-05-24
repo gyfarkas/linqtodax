@@ -360,7 +360,9 @@ namespace LinqToDAX.QueryFormatter
                     this.Builder.Append("DATEVALUE(\"");
                     System.Threading.Thread.CurrentThread.CurrentCulture =
                         System.Globalization.CultureInfo.InvariantCulture;
-                    this.Builder.Append(((DateTime)node.Value).ToShortDateString());
+                    var date = (DateTime)node.Value;
+                    var dateString = String.Format("{0}-{1}-{2}", date.Year, date.Month, date.Day);
+                    this.Builder.Append(dateString);
                     this.Builder.Append("\")");
                     break;
                 case TypeCode.Boolean:

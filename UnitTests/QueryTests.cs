@@ -26,7 +26,7 @@ namespace UnitTests
     public class QueryTests
     {
         private const string ConnectionString =
-            "Provider=MSOLAP;Data Source=LDDEVCUBEDB2;Initial Catalog=AdventureWorks Tabular Model SQL 2012;";
+            "Provider=MSOLAP;Data Source=localhost;Initial Catalog=AdventureWorks Tabular Model SQL 2012;";
         private readonly AdventureWorksContext _db;
 
         public QueryTests()
