@@ -353,14 +353,12 @@ namespace LinqToDAX.QueryFormatter
                 this.Builder.Append("BLANK()");
                 return node;
             }
-
             switch (Type.GetTypeCode(node.Value.GetType()))
             {
                 case TypeCode.DateTime:
+                    var dateString = ((DateTime)node.Value).ToString("yyyy-MM-dd");
                     this.Builder.Append("DATEVALUE(\"");
-                    System.Threading.Thread.CurrentThread.CurrentCulture =
-                        System.Globalization.CultureInfo.InvariantCulture;
-                    this.Builder.Append(((DateTime)node.Value).ToShortDateString());
+                    this.Builder.Append(dateString);
                     this.Builder.Append("\")");
                     break;
                 case TypeCode.Boolean:
@@ -474,7 +472,6 @@ namespace LinqToDAX.QueryFormatter
                     return this.Visit(col);
                 }
             }
-
             return base.VisitMember(node);
         }
 
