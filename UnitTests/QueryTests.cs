@@ -7,6 +7,7 @@ using NUnit.Framework;
 using System;
 using System.Linq;
 using TabularEntities;
+
 using Customer = AdventureWorks.Customer;
 namespace UnitTests
 {
@@ -550,7 +551,6 @@ namespace UnitTests
                     sales.RelatedCustomer.LastName
                 };
            
-
             var result = query.ToList();
             result.Should().Contain(new { CurrencyCode = "USD", LastName = "Yang" });
         }

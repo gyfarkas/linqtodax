@@ -6,22 +6,21 @@
 //   Extension Methods for translating DAX functions in Linq queries
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-using LinqToDAX.Query.DAXExpression;
-
 namespace LinqToDAX.Query
 {
     using System;
     using System.Linq;
     using System.Linq.Expressions;
+    using DAXExpression;
     using TabularEntities;
-
+    
     /// <summary>
     ///     Extension Methods for translating DAX functions in Linq queries
     /// </summary>
     public static class TabularQueryExtensions
     {
         /// <summary>
-        /// DAX Calculatetable function with table filter
+        /// DAX CALCULATETABLE function with table filter
         /// The CALCULATETABLE function changes the context in which the data is filtered,
         /// and evaluates the expression in the new context that you specify. 
         /// For each column used in a filter argument, 
