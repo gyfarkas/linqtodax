@@ -324,6 +324,10 @@ namespace LinqToDAX.Query
                     return _columnExpressionFactory.CreateLookupExpression(node);
                 case "Generate":
                     return BindGenerate(node.Arguments[0], node.Arguments[1], (LambdaExpression)node.Arguments[2]);
+                case "UseRelationship":
+                    var arg1 = (ColumnExpression) Visit(node.Arguments[0]);
+                    var arg2 = (ColumnExpression) Visit(node.Arguments[1]);
+                    return new UseRelationshipExpression(arg1, arg2);
             }
 
             return CreateMappedMeasureExpression(node);

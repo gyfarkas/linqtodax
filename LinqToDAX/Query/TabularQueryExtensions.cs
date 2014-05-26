@@ -163,6 +163,18 @@ namespace LinqToDAX.Query
         }
 
         /// <summary>
+        /// Creates a UseRelationship function in the DAX expression.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public static bool UseRelationship<T>(T source, T target)
+        {
+            throw new NotImplementedException("Only available in a tabular query expression");
+        }
+
+        /// <summary>
         ///  Returns all the rows in a table, or all the values in a column, 
         /// ignoring any filters that might have been applied. 
         /// This function is useful for clearing filters and creating calculations on all the rows in a table.

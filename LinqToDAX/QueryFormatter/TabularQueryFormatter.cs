@@ -452,7 +452,6 @@ namespace LinqToDAX.QueryFormatter
                 default:
                     throw new NotImplementedException("Only not unary operator is supported yet");
             }
-
             return base.Visit(node);
         }
 
@@ -477,6 +476,21 @@ namespace LinqToDAX.QueryFormatter
             }
 
             return base.VisitMember(node);
+        }
+
+        /// <summary>
+        /// Format UseRelationship.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        protected override Expression VisitUseRelationship(UseRelationshipExpression node)
+        {
+            this.Builder.Append("USERELATIONSHIP(");
+            this.Visit(node.Source);
+            this.Builder.Append(",");
+            this.Visit(node.Target);
+            this.Builder.Append(")");
+            return node;
         }
 
         /// <summary>

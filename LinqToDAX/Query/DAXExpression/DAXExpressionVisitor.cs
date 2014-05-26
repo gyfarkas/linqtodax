@@ -56,9 +56,22 @@ namespace LinqToDAX.Query.DAXExpression
                     return VisitRow((RowExpression)node);
                 case DaxExpressionType.Values:
                     return VisitValues((ValuesExpression)node);
+                case DaxExpressionType.UseRelationship:
+                    return VisitUseRelationship((UseRelationshipExpression)node);
             }
             
             return base.Visit(node);
+        }
+
+        protected virtual Expression VisitUseRelationship(UseRelationshipExpression node)
+        {
+            var source = (ColumnExpression) Visit(node.Source);
+            var target = (ColumnExpression) Visit(node.Target);
+            if (source != node.Source || target != node.Target)
+            {
+                return new UseRelationshipExpression(source, target);
+            }
+            return node;
         }
 
         protected virtual Expression VisitValues(ValuesExpression node)
@@ -68,7 +81,6 @@ namespace LinqToDAX.Query.DAXExpression
             {
                 return new ValuesExpression(col.Type, new ColumnDeclaration(node.Column.Name, node.Column.Alias, node.Column.Expression));
             }
-
             return node;
         }
 

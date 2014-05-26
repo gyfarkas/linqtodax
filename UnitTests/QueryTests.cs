@@ -533,5 +533,30 @@ namespace UnitTests
             result.Should().Contain(new { CurrencyCode = "USD", LastName = "Yang" });
         }
 
+        [Test]
+        public void UseRelationshipTest()
+        {
+            var query =
+                from date in _db.DateSet
+                from sales in _db.InternetSalesSet
+                where
+               (sales.RelatedCurrency.CurrencyCode == "USD" || sales.RelatedCustomer.LastName == "Xu") &&
+               (sales.RelatedCustomer.LastName == "Yang" || "Xu" == sales.RelatedCustomer.LastName) &&
+               sales.InternetTotalSales() > 0
+               && TabularQueryExtensions.UseRelationship(date.DateKey, sales.ShipDateKey)
+                select new
+                {
+                    sales.RelatedCurrency.CurrencyCode,
+                    sales.RelatedCustomer.LastName
+                };
+           
+
+            var result = query.ToList();
+            result.Should().Contain(new { CurrencyCode = "USD", LastName = "Yang" });
+        }
+
+
+
+
     }
 }
