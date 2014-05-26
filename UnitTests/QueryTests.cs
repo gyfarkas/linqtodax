@@ -549,14 +549,26 @@ namespace UnitTests
                     sales.RelatedCurrency.CurrencyCode,
                     sales.RelatedCustomer.LastName
                 };
-           
-
             var result = query.ToList();
             result.Should().Contain(new { CurrencyCode = "USD", LastName = "Yang" });
         }
 
-
-
+        [Test]
+        public void CheckDateTest()
+        {
+            var query =
+                from sales in _db.InternetSalesSet
+                where sales.DueDate > new System.DateTime(2010,05,25)
+                select new
+                {
+                    sales.RelatedCurrency.CurrencyCode,
+                    sales.RelatedCustomer.LastName
+                };
+            ((TabularQueryProvider)query.Provider).Log += (msg => {
+                msg.Should().Contain("2010-05-25");
+            });
+            query.ToList();
+        }
 
     }
 }
