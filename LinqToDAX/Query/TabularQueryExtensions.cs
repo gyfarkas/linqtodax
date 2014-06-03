@@ -164,11 +164,24 @@ namespace LinqToDAX.Query
         /// <summary>
         /// Creates a UseRelationship function in the DAX expression.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="source"></param>
-        /// <param name="target"></param>
-        /// <returns></returns>
-        public static bool UseRelationship<T>(T source, T target)
+        /// <typeparam name="T">type of related columns</typeparam>
+        /// <param name="source">source of the relationship</param>
+        /// <param name="target">target of the relationship</param>
+        /// <returns>virtually a boolean to be applicable inside where</returns>
+        public static bool UseRelationship<T>(this T source, T target)
+        {
+            throw new NotImplementedException("Only available in a tabular query expression");
+        }
+
+        /// <summary>
+        /// Creates a UseRelationship function in the DAX expression by giving a column name as string.
+        /// Useful to parameterize relationships in code.
+        /// </summary>
+        /// <typeparam name="T">type of related columns</typeparam>
+        /// <param name="source">source of the relationship</param>
+        /// <param name="target">target of the relationship</param>
+        /// <returns>virtually a boolean to be applicable inside where</returns>
+        public static bool ApplyRelationship<T>(this T source, string target)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }

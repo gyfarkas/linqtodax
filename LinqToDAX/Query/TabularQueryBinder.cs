@@ -325,9 +325,13 @@ namespace LinqToDAX.Query
                 case "Generate":
                     return BindGenerate(node.Arguments[0], node.Arguments[1], (LambdaExpression)node.Arguments[2]);
                 case "UseRelationship":
-                    var arg1 = (ColumnExpression) Visit(node.Arguments[0]);
-                    var arg2 = (ColumnExpression) Visit(node.Arguments[1]);
+                    var arg1 = (ColumnExpression)Visit(node.Arguments[0]);
+                    var arg2 = (ColumnExpression)Visit(node.Arguments[1]);
                     return new UseRelationshipExpression(arg1, arg2);
+                case "Applyrelationship":
+                    var columnexp = (ColumnExpression)Visit(node.Arguments[0]);
+                    var columnname = ((ConstantExpression)node.Arguments[1]).Value as string;
+                    return new UseRelationshipExpression(columnexp, new ColumnExpression(columnexp.NodeType, columnexp.Type, columnname, columnname));
             }
 
             return CreateMappedMeasureExpression(node);

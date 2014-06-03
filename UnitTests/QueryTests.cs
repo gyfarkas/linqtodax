@@ -544,7 +544,27 @@ namespace UnitTests
                (sales.RelatedCurrency.CurrencyCode == "USD" || sales.RelatedCustomer.LastName == "Xu") &&
                (sales.RelatedCustomer.LastName == "Yang" || "Xu" == sales.RelatedCustomer.LastName) &&
                sales.InternetTotalSales() > 0
-               && TabularQueryExtensions.UseRelationship(date.DateKey, sales.ShipDateKey)
+               && date.DateKey.UseRelationship(sales.ShipDateKey)
+                select new
+                {
+                    sales.RelatedCurrency.CurrencyCode,
+                    sales.RelatedCustomer.LastName
+                };
+            var result = query.ToList();
+            result.Should().Contain(new { CurrencyCode = "USD", LastName = "Yang" });
+        }
+
+        [Test]
+        public void ApplyRelationshipTest()
+        {
+            var query =
+                from date in _db.DateSet
+                from sales in _db.InternetSalesSet
+                where
+               (sales.RelatedCurrency.CurrencyCode == "USD" || sales.RelatedCustomer.LastName == "Xu") &&
+               (sales.RelatedCustomer.LastName == "Yang" || "Xu" == sales.RelatedCustomer.LastName) &&
+               sales.InternetTotalSales() > 0
+               && date.DateKey.ApplyRelationship("'Internet Sales'[ShipDateKey]")
                 select new
                 {
                     sales.RelatedCurrency.CurrencyCode,
@@ -566,7 +586,7 @@ namespace UnitTests
                     sales.RelatedCustomer.LastName
                 };
 
-            LinqToDAX.Logger checkDate = (msg => msg.Should().Contain("2010-05-25"));
+            Logger checkDate = (msg => msg.Should().Contain("2010-05-25"));
             ((TabularQueryProvider)query.Provider).Log += checkDate;
             var result = query.ToList();
             ((TabularQueryProvider)query.Provider).Log -= checkDate;
