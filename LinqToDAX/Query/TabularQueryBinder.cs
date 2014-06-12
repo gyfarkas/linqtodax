@@ -102,7 +102,7 @@ namespace LinqToDAX.Query
         /// and the generator and projected by the projector function</returns>
         internal Expression BindGenerate(Expression source, Expression generator, LambdaExpression selector)
         {
-            var sourceProjection = (ProjectionExpression)Visit(source);
+            var sourceProjection = (source is ProjectionExpression) ? (ProjectionExpression)source : (ProjectionExpression)Visit(source);
             var generatorProjection = (ProjectionExpression)Visit(generator);
             _parameterMap[selector.Parameters[0]] = sourceProjection.Projector;
             _parameterMap[selector.Parameters[1]] = generatorProjection.Projector;

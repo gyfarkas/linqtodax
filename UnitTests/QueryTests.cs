@@ -473,6 +473,27 @@ namespace UnitTests
         }
 
         [Test]
+        public void CalculateTableGenerateTest()
+        {
+            var q =
+               from c in _db.SalesTerritorySet
+               select new { c.SalesTerritoryGroup };
+            var filter =
+                from c in _db.SalesTerritorySet
+                where c.SalesTerritoryCountry == "USA"
+                select c.SalesTerritoryGroup;
+            var q2 =
+                from sales in _db.ProductCategorySet
+                select new
+                {
+                    Cat = sales.ProductCategoryName,
+                    sum = (from s in _db.ResellerSalesSet select new { s.SalesAmount }).Sumx(x => x.SalesAmount)
+                };
+            var result = q.CalculateTable(filter).Generate(q2, (x, y) => new { x.SalesTerritoryGroup, y.Cat, y.sum }).Take(3);
+            result.ToList().Should().NotBeNull();
+        }
+
+        [Test]
         public void DateTest()
         {
             var q =
