@@ -137,12 +137,12 @@ namespace LinqToDAX.Query
         }
 
 
-        public static long DistinctCount<T>(this T column, bool filter)
+        public static long? DistinctCount<T>(this T column, bool filter)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }
 
-        public static long DistinctCount<T>(this T column, ITabularData filterExp)
+        public static long? DistinctCount<T>(this T column, ITabularData filterExp)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }

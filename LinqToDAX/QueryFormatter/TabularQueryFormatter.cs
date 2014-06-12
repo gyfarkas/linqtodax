@@ -444,13 +444,14 @@ namespace LinqToDAX.QueryFormatter
                     this.Builder.Append(")");
                     break;
 
-                    // case ExpressionType.Convert:
-                    //    Visit(node.Operand);
-                    //    break;
+                case ExpressionType.Convert:
+                    Visit(node.Operand);
+                    break;
+
                 default:
                     throw new NotImplementedException("Only not unary operator is supported yet");
             }
-            return base.Visit(node);
+            return node;
         }
 
         /// <summary>

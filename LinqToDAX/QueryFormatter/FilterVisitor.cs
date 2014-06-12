@@ -8,10 +8,12 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 
+
 namespace LinqToDAX.QueryFormatter
 {
 
     using System.Linq.Expressions;
+    using LinqToDAX.Query.DAXExpression;
     using LinqToDAX.Query;
     /// <summary>
     /// Special formatter class for  filter expressions
@@ -28,6 +30,19 @@ namespace LinqToDAX.QueryFormatter
             Visit(filter);
             return Builder.ToString();
         }
+
+        /// <summary>
+        /// Generate query string part from aggregation expression
+        /// </summary>
+        /// <param name="aggregationExpression">input aggregation expression</param>
+        /// <returns>the expression unchanged</returns>
+        protected override Expression VisitXAggregation(XAggregationExpression aggregationExpression)
+        {
+            var aggregationString = new XaggregationVisitor().GetAggragationString(aggregationExpression);
+            this.Builder.Append(aggregationString);
+            return aggregationExpression;
+        }
+
 
         /// <summary>
         /// Formatting binary expressions are special in filter expressions

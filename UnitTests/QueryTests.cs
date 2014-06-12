@@ -592,5 +592,41 @@ namespace UnitTests
             ((TabularQueryProvider)query.Provider).Log -= checkDate;
         }
 
+        [Test]
+        [Ignore]
+        public void EmbeddedQureyTest()
+        {
+            var query =
+                from sales in _db.InternetSalesSet
+                where sales.RelatedCustomer.LastName == "Xu"
+                select new
+                {
+                    Customer = (from customer in _db.CustomerSet
+                                where customer.CustomerKey == sales.CustomerKey
+                                select customer).ToList(),
+                    Value = 1
+                };
+            var res = query.ToArray();
+        }
+
+        [Test]
+        public void ComplexFilterCondition()
+        {
+            var query =
+                from sales in _db.InternetSalesSet
+                select sales.ProductKey.DistinctCount(
+                        sales.RelatedDate.ForAll(
+                            sales.RelatedDate.Date2 < 
+                            (from s in _db.InternetSalesSet 
+                             select new
+                             {
+                                s.ProductKey,
+                                s.DueDate
+                             }).Maxx(x => x.DueDate))
+                        );
+            var res = query.ToList().FirstOrDefault();
+            Assert.IsNotNull(res);
+            res.Should().Be(158);
+        }
     }
 }
