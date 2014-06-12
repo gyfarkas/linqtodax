@@ -78,7 +78,11 @@ namespace LinqToDAX
 
             OleDbCommand cmd = Connection.CreateCommand();
             cmd.CommandText = result.CommandText;
-            Log.Invoke(result.CommandText);
+            if (Log != null)
+            {
+                Log.Invoke(result.CommandText);
+            }
+
             OleDbDataReader reader = cmd.ExecuteReader();
 
             Type elementType = TypeSystem.GetElementType(expression.Type);
