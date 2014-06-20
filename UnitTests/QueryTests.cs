@@ -301,14 +301,19 @@ namespace UnitTests
             var q =
                 from customer in _db.CustomerSet
                 where customer.FirstName == "Tony"
-                select new DummyTest
-                {
-                    SomeInt = customer.TotalCarsOwned.Min(customer.FirstName == tony),
-                    SomeString = customer.LastName
+                select
+                new {
+                    Tony = "tony",
+                    Test = new DummyTest
+                    {
+                        SomeInt = customer.TotalCarsOwned.Min(customer.FirstName == tony),
+                        SomeString = customer.LastName
+                    }
+                
                 };
             var result = q.ToList();
-            result.Should().BeOfType<List<DummyTest>>();
-            result.Select(x => x.SomeString)
+            result.FirstOrDefault().Test.Should().BeOfType<DummyTest>();
+            result.Select(x => x.Test.SomeString)
                 .Should().Contain("Xu");
         }
 
@@ -456,6 +461,9 @@ namespace UnitTests
         [Test]
         public void GenerateTest()
         {
+            var h = "hello";
+            var w = "World";
+            var a = new[] {1,2,3};
             var q =
                 from c in _db.SalesTerritorySet
                 select new { c.SalesTerritoryGroup };
@@ -467,8 +475,8 @@ namespace UnitTests
                     Cat = sales.ProductCategoryName,
                     sum = (from s in _db.ResellerSalesSet select new { s.SalesAmount }).Sumx(x => x.SalesAmount)
                 };
-            var result = q.Generate(q2, (x, y) => new { x.SalesTerritoryGroup, y.Cat, y.sum }).Take(3);
-            result.ToList().Should().NotBeNull();
+            var result = q.Generate(q2, (x, y) => new { x.SalesTerritoryGroup, y.Cat, y.sum, Message = h + w , Array = a}).Take(3).ToList();
+            result.Should().NotBeNull();
 
         }
 
@@ -639,6 +647,7 @@ namespace UnitTests
                         sales.RelatedDate.ForAll(
                             sales.RelatedDate.Date2 < 
                             (from s in _db.InternetSalesSet 
+                             where s.ProductKey.ForAll()
                              select new
                              {
                                 s.ProductKey,

@@ -93,6 +93,7 @@ namespace LinqToDAX.Query.DAXExpression
                 {
                     case DaxExpressionType.Column:
                     case DaxExpressionType.UseRelationship:
+                    case DaxExpressionType.All:
                         return false;   
                     case DaxExpressionType.XAggregation:
                     case DaxExpressionType.Lookup:
@@ -134,8 +135,14 @@ namespace LinqToDAX.Query.DAXExpression
             _calculateTableConditions.Add(node);
             return node;
         }
-        
-        
+
+        protected override Expression VisitAllExpression(AllExpression node)
+        {
+            _calculateTableConditions.Add(node);
+            return node;
+        }
+
+
         /// <summary>
         /// Examine Binary expressions
         /// </summary>

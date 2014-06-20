@@ -368,7 +368,7 @@ namespace LinqToDAX.Query
         /// <param name="table"></param>
         /// <param name="projector"></param>
         /// <returns></returns>
-        public static int Countx<T, TValue>(this IQueryable<T> table, Func<T, TValue> projector)
+        public static long? Countx<T, TValue>(this IQueryable<T> table, Func<T, TValue> projector)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }
