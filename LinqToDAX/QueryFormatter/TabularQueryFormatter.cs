@@ -19,6 +19,7 @@ namespace LinqToDAX.QueryFormatter
     ///<summary>
     /// This class is responsible to assemble the actual DAX query string
     ///</summary>
+    /// 
     internal class TabularQueryFormatter : DaxExpressionVisitor
     {
         /// <summary>
@@ -56,6 +57,16 @@ namespace LinqToDAX.QueryFormatter
             this.Builder.Append("EVALUATE\n");
             Visit(node);
             return this.Builder.ToString();
+        }
+
+        /// <summary>
+        /// Skip subordinate queries 
+        /// </summary>
+        /// <param name="projectionExpression">sub query</param>
+        /// <returns>the expression</returns>
+        protected override Expression VisitSubQuery(SubQueryProjection projectionExpression)
+        {
+            return projectionExpression;
         }
 
         /// <summary>
@@ -353,6 +364,7 @@ namespace LinqToDAX.QueryFormatter
                 this.Builder.Append("BLANK()");
                 return node;
             }
+
             switch (Type.GetTypeCode(node.Value.GetType()))
             {
                 case TypeCode.DateTime:
@@ -364,12 +376,18 @@ namespace LinqToDAX.QueryFormatter
                 case TypeCode.Boolean:
                     this.Builder.Append(node.Value);
                     break;
+                case TypeCode.Char:
                 case TypeCode.String:
                     this.Builder.Append("\"");
                     this.Builder.Append(node.Value);
                     this.Builder.Append("\"");
                     break;
-                default:
+                
+                case TypeCode.Decimal:
+                case TypeCode.Double:
+                case TypeCode.Int16:
+                case TypeCode.Int32:
+                case TypeCode.Int64:
                     this.Builder.Append(node.Value);
                     break;
             }

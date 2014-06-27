@@ -488,7 +488,7 @@ namespace UnitTests
                select new { c.SalesTerritoryGroup };
             var filter =
                 from c in _db.SalesTerritorySet
-                where c.SalesTerritoryCountry == "USA"
+                //where c.SalesTerritoryCountry == "USA"
                 select c.SalesTerritoryGroup;
             var q2 =
                 from sales in _db.ProductCategorySet
@@ -497,8 +497,9 @@ namespace UnitTests
                     Cat = sales.ProductCategoryName,
                     sum = (from s in _db.ResellerSalesSet select new { s.SalesAmount }).Sumx(x => x.SalesAmount)
                 };
-            var result = q.CalculateTable(filter).Generate(q2, (x, y) => new { x.SalesTerritoryGroup, y.Cat, y.sum }).Take(3);
-            result.ToList().Should().NotBeNull();
+            var result = q.CalculateTable(filter).Generate(q2, (x, y) => new { List = new List<string>{ x.SalesTerritoryGroup, y.Cat} , y.sum}).Take(3);
+            var temp = result.ToList();
+            temp.Should().NotBeNull();
         }
 
         [Test]
@@ -616,13 +617,12 @@ namespace UnitTests
                 };
 
             Logger checkDate = (msg => msg.Should().Contain("2010-05-25"));
-            ((TabularQueryProvider)query.Provider).Log += checkDate;
+           // ((TabularQueryProvider)query.Provider).Log += checkDate;
             var result = query.ToList();
-            ((TabularQueryProvider)query.Provider).Log -= checkDate;
+            //((TabularQueryProvider)query.Provider).Log -= checkDate;
         }
 
         [Test]
-        [Ignore]
         public void EmbeddedQureyTest()
         {
             var query =
@@ -630,12 +630,20 @@ namespace UnitTests
                 where sales.RelatedCustomer.LastName == "Xu"
                 select new
                 {
-                    Customer = (from customer in _db.CustomerSet
-                                where customer.CustomerKey == sales.CustomerKey
-                                select customer).ToList(),
-                    Value = 1
+                    Key = sales.CustomerKey,
+                    Key2 = sales.RelatedCustomer.CustomerKey,
+                    Name = sales.RelatedCustomer.LastName,
+                    Customers = (from customer in _db.CustomerSet
+                                 where customer.CustomerKey == sales.CustomerKey
+                                select new
+                                {
+                                    Name = customer.FirstName,
+                                    Value = 1
+                                }),
+                    //MainName = sales.RelatedCustomer.FirstName
                 };
             var res = query.ToArray();
+            res.Should().NotBeNull();
         }
 
         [Test]
@@ -657,6 +665,23 @@ namespace UnitTests
             var res = query.ToList().FirstOrDefault();
             Assert.IsNotNull(res);
             res.Should().Be(158);
+        }
+
+        [Test]
+        public void ListInitTest()
+        {
+            var query =
+                from sales in _db.InternetSalesSet
+                select new
+                {
+                    List = new List<string>
+                    {
+                        sales.RelatedCustomer.FirstName,
+                        sales.RelatedCustomer.LastName
+                    }
+                };
+            var result = query.ToList().FirstOrDefault();
+            result.List.Should().NotBeEmpty();
         }
     }
 }

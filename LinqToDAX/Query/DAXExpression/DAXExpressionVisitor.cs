@@ -26,6 +26,8 @@ namespace LinqToDAX.Query.DAXExpression
             {
                 case DaxExpressionType.Projection:
                     return VisitProjection((ProjectionExpression)node);
+                case DaxExpressionType.SubQuery:
+                    return VisitSubQuery((SubQueryProjection) node);
                 case DaxExpressionType.AddColumns:
                     return VisitAddColumns((AddColumnsExpression)node);
                 case DaxExpressionType.CalculateTable:
@@ -258,6 +260,11 @@ namespace LinqToDAX.Query.DAXExpression
                 return new ProjectionExpression(source, projector);
             }
 
+            return projectionExpression;
+        }
+
+        protected virtual Expression VisitSubQuery(SubQueryProjection projectionExpression)
+        {
             return projectionExpression;
         }
 

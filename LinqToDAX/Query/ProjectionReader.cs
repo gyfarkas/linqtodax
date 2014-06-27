@@ -6,12 +6,18 @@
 //   Defines the ProjectionReader type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
+
+using System.Reflection;
+
 namespace LinqToDAX.Query
 {
     using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Data.Common;
+    using System.Linq;
+    using System.Linq.Expressions;
+    using LinqToDAX.Query.DAXExpression;
 
     /// <summary>
     /// Reads the result of the query with the help of the projector function built during the query binding/building
@@ -29,9 +35,10 @@ namespace LinqToDAX.Query
         /// </summary>
         /// <param name="reader">DataReader that contains the results of the query</param>
         /// <param name="projector">projector function that was built with the query</param>
-        internal ProjectionReader(DbDataReader reader, Func<ProjectionRow, T> projector)
+        /// <param name="provider">query provider to execute subordinate queries</param>
+        internal ProjectionReader(DbDataReader reader, Func<ProjectionRow, T> projector, IQueryProvider provider)
         {
-            _enumerator = new Enumerator(reader, projector);
+            _enumerator = new Enumerator(reader, projector, provider);
         }
 
         /// <summary>
@@ -53,6 +60,7 @@ namespace LinqToDAX.Query
             {
                 throw new InvalidOperationException("cannot enumerate more then once");
             }
+
             _enumerator = null;
             return e;
         }
@@ -82,14 +90,21 @@ namespace LinqToDAX.Query
             private readonly DbDataReader _reader;
 
             /// <summary>
+            /// Query provider to execute subordinate queries
+            /// </summary>
+            private readonly IQueryProvider _provider;
+
+            /// <summary>
             /// Initializes a new instance of the <see cref="Enumerator"/> class. 
             /// </summary>
             /// <param name="reader">data reader of the results</param>
             /// <param name="projector">projector function</param>
-            internal Enumerator(DbDataReader reader, Func<ProjectionRow, T> projector)
+            /// <param name="provider">provider to execute subordinate queries</param>
+            internal Enumerator(DbDataReader reader, Func<ProjectionRow, T> projector, IQueryProvider provider)
             {
                 _reader = reader;
                 _projector = projector;
+                _provider = provider;
             }
 
             /// <summary>
@@ -117,6 +132,7 @@ namespace LinqToDAX.Query
 
                     return true;
                 }
+
                 return false;
             }
 
@@ -165,6 +181,45 @@ namespace LinqToDAX.Query
                 }
 
                 return _reader[index];
+            }
+
+            /// <summary>
+            /// Executes a subordinate query expression
+            /// </summary>
+            /// <param name="query">query expression</param>
+            /// <typeparam name="E">result type</typeparam>
+            /// <returns>result object</returns>
+            public override IEnumerable<E> ExecuteSubQuery<E>(LambdaExpression query)
+            {
+                var body = ((SubQueryProjection)query.Body).Exp as ProjectionExpression;
+                var source = (DaxExpression)new Replacer()
+                    .Replace(body.Source, query.Parameters[0], Expression.Constant(this));
+                
+                source = (DaxExpression)TabularEvaluator.PartialEval(source, CanEvaluateLocally);
+                var projection = new ProjectionExpression(source, body.Projector);
+                IEnumerable<E> results = (IEnumerable<E>)this._provider.Execute(projection);
+                List<E> list = new List<E>(results);
+                if (typeof(IQueryable<E>).IsAssignableFrom(query.Body.Type))
+                {
+                    return list.AsQueryable();
+                }
+
+                return list;
+            }
+
+            private static bool CanEvaluateLocally(Expression exp)
+            {
+                if (exp.NodeType == ExpressionType.Parameter || IsDaxExpression(exp))
+                {
+                    return false;
+                }
+
+                return true;
+            }
+
+            private static bool IsDaxExpression(Expression exp)
+            {
+                return ((int)exp.NodeType) > 1000;
             }
         }
     }

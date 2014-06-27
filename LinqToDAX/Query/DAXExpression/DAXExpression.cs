@@ -102,7 +102,12 @@ namespace LinqToDAX.Query.DAXExpression
         /// <summary>
         /// Type flag
         /// </summary>
-        UseRelationship
+        UseRelationship,
+
+        /// <summary>
+        /// Type flag for subQueries
+        /// </summary>
+        SubQuery
     }
 
     /// <summary>
@@ -659,6 +664,18 @@ namespace LinqToDAX.Query.DAXExpression
         {
             Source = source;
             Projector = projector;
+        }
+
+        /// <summary>
+        /// Subquery
+        /// </summary>
+        /// <param name="proj"></param>
+        /// <param name="nodeType"></param>
+        protected ProjectionExpression(ProjectionExpression proj, DaxExpressionType nodeType) :
+            base((ExpressionType)nodeType, typeof(IQueryable<>).MakeGenericType(proj.Type))
+        {
+            this.Source = proj.Source;
+            this.Projector = proj.Projector;
         }
 
         internal DaxExpression Source { get; private set; }

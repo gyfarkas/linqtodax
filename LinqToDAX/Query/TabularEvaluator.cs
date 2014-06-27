@@ -45,10 +45,12 @@ namespace LinqToDAX.Query
         /// <returns>A new tree with sub-trees evaluated and replaced.</returns>
         public static Expression PartialEval(Expression expression)
         {
-            if (expression is DaxExpression)
+            var daxExpression = expression as DaxExpression;
+            if (daxExpression != null)
             {
                 return expression;
             }
+
             return PartialEval(expression, CanBeEvaluatedLocally);
         }
 
@@ -61,10 +63,11 @@ namespace LinqToDAX.Query
                 if (me != null)
                 {
                     var attribute =
-                        me.Method.GetCustomAttribute(typeof (TabularMeasureMappingAttribute)) as
+                        me.Method.GetCustomAttribute(typeof(TabularMeasureMappingAttribute)) as
                             TabularMeasureMappingAttribute;
                     return attribute == null;
                 }
+
                 return true;
             };
             Func<Expression, bool> notExtension =
@@ -80,6 +83,7 @@ namespace LinqToDAX.Query
                                    !(me.Method.DeclaringType == typeof(TabularQueryExtensions));
                         }
                     }
+
                     return true;
                 };
             return notParam && notMeasure(expression) && notExtension(expression);
@@ -89,7 +93,7 @@ namespace LinqToDAX.Query
     /// <summary>
     /// Evaluates & replaces sub-trees when first candidate is reached (top-down)
     /// </summary>
-    internal class SubtreeEvaluator : ExpressionVisitor
+    internal class SubtreeEvaluator : DaxExpressionVisitor
     {
         private readonly HashSet<Expression> _candidates;
 
@@ -109,17 +113,20 @@ namespace LinqToDAX.Query
             {
                 return null;
             }
+
             if (_candidates.Contains(exp))
             {
                 return Evaluate(exp);
             }
-            if (exp is DaxExpression)
-            {
-                return exp;
-            }
+
+            //if (exp is DaxExpression)
+            //{
+            //    return exp;
+            //}
 
             return base.Visit(exp);
         }
+
 
         protected override Expression VisitMemberInit(MemberInitExpression node)
         {
@@ -129,7 +136,11 @@ namespace LinqToDAX.Query
                 if (binding.BindingType == MemberBindingType.Assignment)
                 {
                     var assignment = binding as MemberAssignment;
-                    if (assignment == null) return node; //this is stupid however;
+                    if (assignment == null)
+                    {
+                        return node;
+                    } //this is stupid however;
+                
                     Expression e = Visit(assignment.Expression);
 
                     MemberAssignment b = Expression.Bind(assignment.Member, e);
@@ -142,22 +153,29 @@ namespace LinqToDAX.Query
 
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
-            if (node.Method.DeclaringType == typeof (TabularQueryExtensions))
+            if (node.Method.DeclaringType == typeof(TabularQueryExtensions))
             {
                 foreach (Expression arg in node.Arguments)
                 {
                     Visit(arg);
                 }
             }
+
             return base.VisitMethodCall(node);
         }
 
         private static Expression Evaluate(Expression e)
         {
-            if (e.NodeType == ExpressionType.Constant || (DaxExpressionType) e.NodeType == DaxExpressionType.Projection)
+            if (e.NodeType == ExpressionType.Constant || (DaxExpressionType)e.NodeType == DaxExpressionType.Projection)
             {
                 return e;
             }
+
+            if (e.NodeType == ExpressionType.ListInit || e.NodeType == ExpressionType.NewArrayInit || (e.NodeType == ExpressionType.New && e.Type.IsGenericType))
+            {
+                return e;
+            }
+
             LambdaExpression lambda = Expression.Lambda(e);
             Delegate fn = lambda.Compile();
             return Expression.Constant(fn.DynamicInvoke(null), e.Type);
