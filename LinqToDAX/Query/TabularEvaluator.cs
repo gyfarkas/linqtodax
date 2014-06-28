@@ -7,9 +7,6 @@
 //   This step is necessary because it translates all local variable references in the LINQ query into values
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
-using LinqToDAX.Query.DAXExpression;
-
 namespace LinqToDAX.Query
 {
     using System;
@@ -17,6 +14,7 @@ namespace LinqToDAX.Query
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
+    using LinqToDAX.Query.DAXExpression;
 
     /// <summary>
     /// evaluator class to partially evaluate an expression tree.
@@ -118,11 +116,6 @@ namespace LinqToDAX.Query
             {
                 return Evaluate(exp);
             }
-
-            //if (exp is DaxExpression)
-            //{
-            //    return exp;
-            //}
 
             return base.Visit(exp);
         }

@@ -7,15 +7,12 @@
 //   that is used to get the data from the database.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
-using System;
-using LinqToDAX.Query.DAXExpression;
-
 namespace LinqToDAX.Query
 {
+    using System;
     using System.Linq.Expressions;
     using System.Reflection;
-
+    using DAXExpression;
     /// <summary>
     /// This class builds up the reader instance via reflection
     ///  that is used to get the data from the database.
@@ -61,15 +58,25 @@ namespace LinqToDAX.Query
             return Expression.Lambda(body, _row);
         }
 
+        /// <summary>
+        /// Get embedded projections
+        /// </summary>
+        /// <param name="projectionExpression">projection expression</param>
+        /// <returns>projector expression</returns>
         protected override Expression VisitProjection(ProjectionExpression projectionExpression)
         {
             return Visit(projectionExpression.Projector);
         }    
 
+        /// <summary>
+        /// Transform subordinate queries
+        /// </summary>
+        /// <param name="projectionExpression">subordinate query</param>
+        /// <returns>converted projection</returns>
         protected override Expression VisitSubQuery(SubQueryProjection projectionExpression)
         {
-            var exp = (DaxExpression)base.Visit(projectionExpression.Exp.Source);
-            var projection = new ProjectionExpression(exp, projectionExpression.Exp.Projector);
+            var exp = (DaxExpression)base.Visit(projectionExpression.Projection.Source);
+            var projection = new ProjectionExpression(exp, projectionExpression.Projection.Projector);
             var q = new SubQueryProjection(projectionExpression.Type, projection);
             LambdaExpression subQuery = Expression.Lambda(q, _row);
             if (projectionExpression.Type.IsGenericType)
@@ -82,6 +89,11 @@ namespace LinqToDAX.Query
             return base.Visit(projectionExpression);
         }
 
+        /// <summary>
+        /// When analysing binary expressions in subqueries we only evaluate the right operand
+        /// </summary>
+        /// <param name="node">binary expression</param>
+        /// <returns>converted expression</returns>
         protected override Expression VisitBinary(BinaryExpression node)
         {
             if (node.NodeType == ExpressionType.Equal)

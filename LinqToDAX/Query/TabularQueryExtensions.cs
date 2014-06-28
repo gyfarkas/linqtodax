@@ -17,6 +17,7 @@ namespace LinqToDAX.Query
     /// <summary>
     ///     Extension Methods for translating DAX functions in Linq queries
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters")]
     public static class TabularQueryExtensions
     {
         /// <summary>
@@ -74,75 +75,89 @@ namespace LinqToDAX.Query
             throw new NotImplementedException("Only available in a tabular query expression");
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "column"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "filter")]
         public static T Average<T>(this T column, bool filter)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "column"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "filterExp")]
         public static T Average<T>(this T column, ITabularData filterExp)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "column")]
         public static T Sum<T>(this T column)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }
 
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "column"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "filter")]
         public static T Sum<T>(this T column, bool filter)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "column"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "filterExp")]
         public static T Sum<T>(this T column, ITabularData filterExp)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "column")]
         public static T Max<T>(this T column)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }
 
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "column"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "filter")]
         public static T Max<T>(this T column, bool filter)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "filterExp"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "column")]
         public static T Max<T>(this T column, ITabularData filterExp)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "column")]
         public static T Min<T>(this T column)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }
 
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "column"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "filter")]
         public static T Min<T>(this T column, bool filter)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "filterExp"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "column")]
         public static T Min<T>(this T column, ITabularData filterExp)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "column")]
         public static long DistinctCount<T>(this T column)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }
 
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "filter"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "column")]
         public static long? DistinctCount<T>(this T column, bool filter)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "column"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "filterExp")]
         public static long? DistinctCount<T>(this T column, ITabularData filterExp)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
@@ -157,6 +172,7 @@ namespace LinqToDAX.Query
         /// <param name="target">should be a property access referring to a column</param>
         /// <param name="lookupdict">should be an even number of column referring properties of some table</param>
         /// <returns></returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "target"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "lookupdict")]
         public static T LookupValue<T, TSearch>(this T target, params TSearch[] lookupdict)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
@@ -169,6 +185,7 @@ namespace LinqToDAX.Query
         /// <param name="source">source of the relationship</param>
         /// <param name="target">target of the relationship</param>
         /// <returns>virtually a boolean to be applicable inside where</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "source"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "target")]
         public static bool UseRelationship<T>(this T source, T target)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
@@ -182,6 +199,7 @@ namespace LinqToDAX.Query
         /// <param name="source">source of the relationship</param>
         /// <param name="target">target of the relationship</param>
         /// <returns>virtually a boolean to be applicable inside where</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "source"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "target")]
         public static bool ApplyRelationship<T>(this T source, string target)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
@@ -194,6 +212,7 @@ namespace LinqToDAX.Query
         /// http://technet.microsoft.com/en-us/library/ee634802.aspx
         /// </summary>
         /// <returns>boolean, the return value is never used, it is meant to be part of a filter expression in TabularTable Where()</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "exp")]
         public static bool ForAll<T>(this T exp)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
@@ -205,6 +224,7 @@ namespace LinqToDAX.Query
         /// This function can be used to obtain visual totals in queries.
         ///  http://technet.microsoft.com/en-us/library/gg492186.aspx
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "exp")]
         public static bool ForAllSelected<T>(this T exp)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
@@ -219,6 +239,7 @@ namespace LinqToDAX.Query
         /// http://technet.microsoft.com/en-us/library/ee634802.aspx
         /// </summary>
         /// <returns>boolean, the return value is never used, it is meant to be part of a filter expression in TabularTable Where()</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "conditions"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "exp")]
         public static bool ForAll<T>(this T exp, bool conditions)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
@@ -233,6 +254,7 @@ namespace LinqToDAX.Query
         /// http://technet.microsoft.com/en-us/library/gg492186.aspx
         /// </summary>
         /// <returns>boolean, the return value is never used, it is meant to be part of a filter expression in TabularTable Where()</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "exp"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "conditions")]
         public static bool ForAllSelected<T>(this T exp, bool conditions)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
@@ -245,6 +267,7 @@ namespace LinqToDAX.Query
         /// </summary>
         /// <param name="table">The table containing the rows for which the expression will be evaluated.</param>
         /// <param name="projector">The expression to be evaluated for each row of the table.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "projector"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "table")]
         public static TValue? Sumx<T, TValue>(this IQueryable<T> table, Func<T, TValue> projector) where TValue : struct
         {
             throw new NotImplementedException("Only available in a tabular query expression");
@@ -258,6 +281,7 @@ namespace LinqToDAX.Query
         /// <param name="table">The table containing the rows for which the expression will be evaluated.</param>
         /// <param name="projector">The expression to be evaluated for each row of the table.</param>
         /// <returns>the maximum value of the result of the projection on the table</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "projector"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "table")]
         public static TValue? Maxx<T, TValue>(this IQueryable<T> table, Func<T, TValue> projector) where TValue : struct
         {
             throw new NotImplementedException("Only available in a tabular query expression");
@@ -270,6 +294,7 @@ namespace LinqToDAX.Query
         /// </summary>
         /// <param name="table">The table containing the rows for which the expression will be evaluated.</param>
         /// <param name="projector">The expression to be evaluated for each row of the table.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "table"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "projector")]
         public static TValue? Sumx<T, TValue>(this IQueryable<T> table, Func<T, TValue?> projector)
             where TValue : struct
         {
@@ -284,6 +309,7 @@ namespace LinqToDAX.Query
         /// <param name="table">The table containing the rows for which the expression will be evaluated.</param>
         /// <param name="projector">The expression to be evaluated for each row of the table.</param>
         /// <returns>the maximum value of the result of the projection on the table</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "table"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "projector")]
         public static TValue? Maxx<T, TValue>(this IQueryable<T> table, Func<T, TValue?> projector)
             where TValue : struct
         {
@@ -300,6 +326,7 @@ namespace LinqToDAX.Query
         /// <returns>the minimum value of the result of the projection on the table</returns>
         /// <typeparam name="T">type of the table</typeparam>
         /// <typeparam name="TValue">type of the value returned</typeparam>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "projector"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "table")]
         public static TValue? Minx<T, TValue>(this IQueryable<T> table, Func<T, TValue> projector) where TValue : struct
         {
             throw new NotImplementedException("Only available in a tabular query expression");
@@ -313,6 +340,7 @@ namespace LinqToDAX.Query
         /// <param name="table">The table containing the rows for which the expression will be evaluated.</param>
         /// <param name="projector">The expression to be evaluated for each row of the table.</param>
         /// <returns>the minimum value of the result of the projection on the table</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "projector"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "table")]
         public static TValue? Minx<T, TValue>(this IQueryable<T> table, Func<T, TValue?> projector)
             where TValue : struct
         {
@@ -327,6 +355,7 @@ namespace LinqToDAX.Query
         /// <param name="table">DAX expression that returns a table of data over which the expression is evaluated..</param>
         /// <param name="projector">The expression to be evaluated for each row of the table.</param>
         /// <returns>ranking of a number </returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "projector"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "table")]
         public static long? Rankx<T, TValue>(this IQueryable<T> table, Func<T, TValue> projector)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
@@ -342,6 +371,7 @@ namespace LinqToDAX.Query
         /// <param name="table">DAX expression that returns a table of data over which the expression is evaluated..</param>
         /// <param name="projector">The expression to be evaluated for each row of the table.</param>
         /// <returns>ranking of a number </returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "projector"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "table")]
         public static long? ReverseRankx<T, TValue>(this IQueryable<T> table, Func<T, TValue> projector)
             where TValue : struct
         {
@@ -356,6 +386,7 @@ namespace LinqToDAX.Query
         /// <param name="table"></param>
         /// <param name="projector"></param>
         /// <returns></returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "projector"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "table")]
         public static TValue Averagex<T, TValue>(this IQueryable<T> table, Func<T, TValue> projector)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
@@ -364,15 +395,27 @@ namespace LinqToDAX.Query
         /// <summary>
         /// COUNTX function call.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TValue"></typeparam>
-        /// <param name="table"></param>
-        /// <param name="projector"></param>
-        /// <returns></returns>
+        /// <typeparam name="T">type of the table</typeparam>
+        /// <typeparam name="TValue">type of the value counted</typeparam>
+        /// <param name="table">Tabular table or table expression</param>
+        /// <param name="projector">function to select the value to count, must be column reference</param>
+        /// <returns>count of values</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "projector"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "table")]
         public static long? Countx<T, TValue>(this IQueryable<T> table, Func<T, TValue> projector)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }
 
+        /// <summary>
+        /// COUNTROWS function
+        /// </summary>
+        /// <typeparam name="T">Type of tabular table</typeparam>
+        /// <param name="table">table to be counted</param>
+        /// <returns>number of rows</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "table")]
+        public static long? CountRows<T>(this IQueryable<T> table)
+        {
+            throw new NotImplementedException("Only available in a tabular query expression");
+        }
     }
 }

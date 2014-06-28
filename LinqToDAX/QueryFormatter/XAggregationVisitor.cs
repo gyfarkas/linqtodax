@@ -68,6 +68,9 @@ namespace LinqToDAX.QueryFormatter
                 case AggregationType.Min:
                     Builder.Append("MINX(");
                     break;
+                case AggregationType.CountRows:
+                    Builder.Append("COUNTROWS(");
+                    break;
                 case AggregationType.Rank:
                 case AggregationType.ReverseRank:
                     Builder.Append("RANKX(");
@@ -75,19 +78,22 @@ namespace LinqToDAX.QueryFormatter
             }
 
             Visit(aggregationExpression.Source);
-            Builder.Append(",\n");
-            if (aggregationExpression.AggregationType == AggregationType.ReverseRank)
+            if (aggregationExpression.Column != null)
             {
-                Builder.Append("-");
-            }
-
-            if (aggregationExpression.Column is MeasureExpression)
-            {
-                Builder.Append(aggregationExpression.Column.Name);
-            }
-            else
-            {
-                Builder.Append(aggregationExpression.Column.DbName);
+                Builder.Append(",\n");
+                if (aggregationExpression.AggregationType == AggregationType.ReverseRank)
+                {
+                    Builder.Append("-");
+                }
+           
+                if (aggregationExpression.Column is MeasureExpression)
+                {
+                    Builder.Append(aggregationExpression.Column.Name);
+                }
+                else
+                {
+                    Builder.Append(aggregationExpression.Column.DbName);
+                }
             }
 
             Builder.Append(")");

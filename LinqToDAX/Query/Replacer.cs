@@ -1,4 +1,12 @@
-﻿namespace LinqToDAX.Query
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Replacer.cs" company="Dealogic">
+//   see LICENCE.md
+// </copyright>
+// <summary>
+//   Defines the ProjectionReader type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+namespace LinqToDAX.Query
 {
     using System.Linq.Expressions;
     using DAXExpression;

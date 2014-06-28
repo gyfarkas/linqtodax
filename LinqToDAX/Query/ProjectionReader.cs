@@ -6,9 +6,6 @@
 //   Defines the ProjectionReader type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
-using System.Reflection;
-
 namespace LinqToDAX.Query
 {
     using System;
@@ -17,6 +14,7 @@ namespace LinqToDAX.Query
     using System.Data.Common;
     using System.Linq;
     using System.Linq.Expressions;
+    using System.Reflection;
     using LinqToDAX.Query.DAXExpression;
 
     /// <summary>
@@ -191,7 +189,7 @@ namespace LinqToDAX.Query
             /// <returns>result object</returns>
             public override IEnumerable<E> ExecuteSubQuery<E>(LambdaExpression query)
             {
-                var body = ((SubQueryProjection)query.Body).Exp as ProjectionExpression;
+                var body = ((SubQueryProjection)query.Body).Projection as ProjectionExpression;
                 var source = (DaxExpression)new Replacer()
                     .Replace(body.Source, query.Parameters[0], Expression.Constant(this));
                 

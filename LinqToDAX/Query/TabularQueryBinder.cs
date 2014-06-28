@@ -252,6 +252,11 @@ namespace LinqToDAX.Query
             return _columnExpressionFactory.CreateColumnExpression(m);
         }
 
+        /// <summary>
+        /// Cptures subqueries
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
         protected override Expression VisitNew(NewExpression node)
         {
             var args = node.Arguments.Select(Visit).ToArray();
@@ -265,7 +270,7 @@ namespace LinqToDAX.Query
                     {
                         var type = typeof(IQueryable<>).MakeGenericType(args[i].Type);
                         var proj = (ProjectionExpression)args[i];
-                        args[i] = new SubQueryProjection(type, proj); //new ProjectionExpression(type, proj.Source, proj.Projector);
+                        args[i] = new SubQueryProjection(type, proj); 
                         changed = true;
                     }
                 }
@@ -359,6 +364,8 @@ namespace LinqToDAX.Query
                     var columnexp = (ColumnExpression)Visit(node.Arguments[0]);
                     var columnname = ((ConstantExpression)node.Arguments[1]).Value as string;
                     return new UseRelationshipExpression(columnexp, new ColumnExpression(columnexp.Type, columnexp.NodeType, columnname, columnname, string.Empty));
+                case "CountRows":
+                    return _columnExpressionFactory.CreateCountRows(AggregationType.CountRows, node);
             }
 
             return CreateMappedMeasureExpression(node);

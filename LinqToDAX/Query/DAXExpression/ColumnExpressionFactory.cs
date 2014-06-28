@@ -141,20 +141,7 @@ namespace LinqToDAX.Query.DAXExpression
             }
 
             MemberInfo member = init.Member;
-            string tableName = string.Empty;
-
-            var finder = new Finder<ConstantExpression>();
-            finder.Visit(node);
-            if (finder.Found)
-            {
-                var t = finder.First.Value as IQueryable;
-                if(t != null)
-                {
-                    var tableArgument = t.ElementType;
-                    var att = tableArgument.GetCustomAttribute<TabularTableMappingAttribute>();
-                    tableName = att.TableName;
-                }
-            }
+            string  tableName = FindTableName(node);
            
             var projector = table.Projector as NewExpression;
             var column = (ColumnExpression)FindColumnExpression(projector, member);
@@ -177,6 +164,34 @@ namespace LinqToDAX.Query.DAXExpression
             }
 
             return new XAggregationExpression(aggregationType, table, column, "[" + aggregationType + _measureCounter + "]", tableName, type);
+        }
+
+        internal Expression CreateCountRows(AggregationType aggregationType, MethodCallExpression node)
+        {
+            _measureCounter++;
+            var table = (ProjectionExpression)_binder.Visit(node.Arguments[0]);
+            string tableName = FindTableName(node);
+            var type = typeof(long?);
+        
+            return new XAggregationExpression(aggregationType, table, null, "[" + aggregationType + _measureCounter + "]", tableName, type);
+        }
+
+        private static string FindTableName(MethodCallExpression node)
+        {
+            var tableName = string.Empty;
+            var finder = new Finder<ConstantExpression>();
+            finder.Visit(node);
+            if (finder.Found)
+            {
+                var t = finder.First.Value as IQueryable;
+                if (t != null)
+                {
+                    var tableArgument = t.ElementType;
+                    var att = tableArgument.GetCustomAttribute<TabularTableMappingAttribute>();
+                    tableName = att.TableName;
+                }
+            }
+            return tableName;
         }
 
         /// <summary>

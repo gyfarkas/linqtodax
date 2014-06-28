@@ -47,7 +47,6 @@
     <Compile Include="Query\DAXExpression\AllExpression.cs" />
     <Compile Include="Query\DAXExpression\AllExpressionFactory.cs" />
     <Compile Include="Query\DAXExpression\ColumnExpressionFactory.cs" />
-    <Compile Include="Query\BooleanConstantFinder.cs" />
     <Compile Include="Query\DAXExpression\DAXExpression.cs" />
     <Compile Include="Query\DAXExpression\DaxExpressionFactory.cs" />
     <Compile Include="Query\DAXExpression\DAXExpressionVisitor.cs" />

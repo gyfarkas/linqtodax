@@ -8,7 +8,7 @@ namespace LinqToDAX.Query.DAXExpression
     /// </summary>
     internal class SubQueryProjection : DaxExpression
     {
-        internal ProjectionExpression Exp { get; private set; }
+        internal ProjectionExpression Projection { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubQueryProjection"/> class.
@@ -17,7 +17,7 @@ namespace LinqToDAX.Query.DAXExpression
         internal SubQueryProjection(Type type, ProjectionExpression exp)
             : base((ExpressionType)DaxExpressionType.SubQuery, type)
         {
-            this.Exp = exp;
+            this.Projection = exp;
         }
     }
 }

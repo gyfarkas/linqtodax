@@ -683,5 +683,19 @@ namespace UnitTests
             var result = query.ToList().FirstOrDefault();
             result.List.Should().NotBeEmpty();
         }
+
+        [Test]
+        public void CountrowsTest()
+        {
+            var q =
+                from sales in _db.InternetSalesSet
+                select new
+                {
+                    C = (from customer in _db.CustomerSet
+                         select customer.CustomerKey).CountRows()
+                };
+            var res = q.ToList();
+            res.Should().NotBeNull();
+        }
     }
 }

@@ -96,29 +96,6 @@ namespace LinqToDAX
         public object Execute(Expression expression)
         {
             return this.Execute(Translate(expression)); 
-            //TranslateResult result = Translate(expression);
-            //Delegate projector = result.Projector.Compile();
-            //if (Connection.State != ConnectionState.Open)
-            //{
-            //    Connection.Open();
-            //}
-
-            //OleDbCommand cmd = Connection.CreateCommand();
-            //cmd.CommandText = result.CommandText;
-            //if (Log != null)
-            //{
-            //    Log.Invoke(result.CommandText);
-            //}
-
-            //OleDbDataReader reader = cmd.ExecuteReader();
-
-            //Type elementType = TypeSystem.GetElementType(expression.Type);
-            //return Activator.CreateInstance(
-            //    typeof(ProjectionReader<>).MakeGenericType(elementType),
-            //    BindingFlags.Instance | BindingFlags.NonPublic,
-            //    null,
-            //    new object[] { reader, projector, this },
-            //    null);
         }
 
         /// <summary>
@@ -135,14 +112,14 @@ namespace LinqToDAX
         private static TranslateResult Translate(Expression expression)
         {
             var projection = expression as ProjectionExpression;
-            var subq = expression as SubQueryProjection;
+            var subQuery = expression as SubQueryProjection;
             
-            if (subq != null)
+            if (subQuery != null)
             {
-                projection = subq.Exp;
+                projection = subQuery.Projection;
             }
 
-            if (projection == null && subq == null)
+            if (projection == null && subQuery == null)
             {
                 expression = TabularEvaluator.PartialEval(expression);
                 projection = (ProjectionExpression)new TabularQueryBinder().Bind(expression);
@@ -154,12 +131,12 @@ namespace LinqToDAX
             return 
                 new TranslateResult 
                 {
-                    Expression = expression,
                     CommandText = commandText, 
                     Projector = projector
                 };
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2100:Review SQL queries for security vulnerabilities")]
         private object Execute(TranslateResult result)
         {
             Delegate projector = result.Projector.Compile();
@@ -170,6 +147,7 @@ namespace LinqToDAX
 
             OleDbCommand cmd = Connection.CreateCommand();
             cmd.CommandText = result.CommandText;
+
             if (Log != null)
             {
                 Log.Invoke(result.CommandText);
@@ -189,8 +167,6 @@ namespace LinqToDAX
 
         private class TranslateResult
         {
-            internal Expression Expression { get; set; }            
-            
             internal string CommandText { get; set; }
 
             internal LambdaExpression Projector { get; set; }
