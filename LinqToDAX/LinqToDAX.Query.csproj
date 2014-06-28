@@ -54,6 +54,7 @@
     <Compile Include="QueryFormatter\FilterVisitor.cs" />
     <Compile Include="QueryFormatter\GenerateVisitor.cs" />
     <Compile Include="Query\DAXExpression\FilterConditionVisitor.cs" />
+    <Compile Include="Query\DAXExpression\SubQueryProjection.cs" />
     <Compile Include="Query\Nominator.cs" />
     <Compile Include="Query\Projection.cs" />
     <Compile Include="Query\ProjectionBuilder.cs" />
@@ -62,6 +63,7 @@
     <Compile Include="Query\Finder.cs" />
     <Compile Include="Query\DAXExpression\TableExpression.cs" />
     <Compile Include="Query\DAXExpression\TableFactory.cs" />
+    <Compile Include="Query\Replacer.cs" />
     <Compile Include="Query\TabularEvaluator.cs" />
     <Compile Include="QueryFormatter\XAggregationVisitor.cs" />
     <Compile Include="TabularException.cs" />

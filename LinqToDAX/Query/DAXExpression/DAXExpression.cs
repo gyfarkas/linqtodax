@@ -97,7 +97,17 @@ namespace LinqToDAX.Query.DAXExpression
         /// <summary>
         ///  Type flag
         /// </summary>
-        Row
+        Row,
+
+        /// <summary>
+        /// Type flag
+        /// </summary>
+        UseRelationship,
+
+        /// <summary>
+        /// Type flag for subQueries
+        /// </summary>
+        SubQuery
     }
 
     /// <summary>
@@ -223,6 +233,31 @@ namespace LinqToDAX.Query.DAXExpression
         /// </summary>
         internal ColumnDeclaration Column { get; private set; }
     }
+
+    /// <summary>
+    /// Represents a VALUES DAX function
+    /// </summary>
+    internal class UseRelationshipExpression : DaxExpression
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UseRelationshipExpression"/> class.
+        /// </summary>
+        /// <param name="t">runtime type</param>
+        /// <param name="column">column expression</param>
+        internal UseRelationshipExpression(ColumnExpression source, ColumnExpression target)
+            : base((ExpressionType)DaxExpressionType.UseRelationship, typeof(bool))
+        {
+            Source = source;
+            Target = target;
+        }
+
+        /// <summary>
+        /// Gets the column argument of VALUES function
+        /// </summary>
+        internal ColumnExpression Source { get; private set; }
+        internal ColumnExpression Target { get; private set; }
+    }
+
 
     /// <summary>
     /// Represents a ROW DAX function call
@@ -629,6 +664,18 @@ namespace LinqToDAX.Query.DAXExpression
         {
             Source = source;
             Projector = projector;
+        }
+
+        /// <summary>
+        /// Subquery
+        /// </summary>
+        /// <param name="proj"></param>
+        /// <param name="nodeType"></param>
+        protected ProjectionExpression(ProjectionExpression proj, DaxExpressionType nodeType) :
+            base((ExpressionType)nodeType, typeof(IQueryable<>).MakeGenericType(proj.Type))
+        {
+            this.Source = proj.Source;
+            this.Projector = proj.Projector;
         }
 
         internal DaxExpression Source { get; private set; }

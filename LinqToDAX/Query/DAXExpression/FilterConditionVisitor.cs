@@ -92,6 +92,8 @@ namespace LinqToDAX.Query.DAXExpression
                 switch ((DaxExpressionType)expression.NodeType)
                 {
                     case DaxExpressionType.Column:
+                    case DaxExpressionType.UseRelationship:
+                    case DaxExpressionType.All:
                         return false;   
                     case DaxExpressionType.XAggregation:
                     case DaxExpressionType.Lookup:
@@ -122,6 +124,24 @@ namespace LinqToDAX.Query.DAXExpression
 
             return new FilterConditionVisitor(isFilterCondition, hasSameColumn);
         }
+
+        /// <summary>
+        /// Adds use relationship to calculate table conditions.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        protected override Expression VisitUseRelationship(UseRelationshipExpression node)
+        {
+            _calculateTableConditions.Add(node);
+            return node;
+        }
+
+        protected override Expression VisitAllExpression(AllExpression node)
+        {
+            _calculateTableConditions.Add(node);
+            return node;
+        }
+
 
         /// <summary>
         /// Examine Binary expressions

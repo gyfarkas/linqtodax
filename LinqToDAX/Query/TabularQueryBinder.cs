@@ -7,7 +7,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System.Resources;
+using FunctionalUtilities;
 
 namespace LinqToDAX.Query
 {
@@ -102,7 +102,7 @@ namespace LinqToDAX.Query
         /// and the generator and projected by the projector function</returns>
         internal Expression BindGenerate(Expression source, Expression generator, LambdaExpression selector)
         {
-            var sourceProjection = (ProjectionExpression)Visit(source);
+            var sourceProjection = (source is ProjectionExpression) ? (ProjectionExpression)source : (ProjectionExpression)Visit(source);
             var generatorProjection = (ProjectionExpression)Visit(generator);
             _parameterMap[selector.Parameters[0]] = sourceProjection.Projector;
             _parameterMap[selector.Parameters[1]] = generatorProjection.Projector;
@@ -252,6 +252,33 @@ namespace LinqToDAX.Query
             return _columnExpressionFactory.CreateColumnExpression(m);
         }
 
+        protected override Expression VisitNew(NewExpression node)
+        {
+            var args = node.Arguments.Select(Visit).ToArray();
+            if (args.Any(a => (DaxExpressionType)a.NodeType == DaxExpressionType.Projection))
+            {
+                var changed = false;
+                for (int i = 0; i < args.Length; i++)
+                {
+                    var p = args[i] as ProjectionExpression;
+                    if (p != null && (DaxExpressionType)p.Source.NodeType != DaxExpressionType.Table)
+                    {
+                        var type = typeof(IQueryable<>).MakeGenericType(args[i].Type);
+                        var proj = (ProjectionExpression)args[i];
+                        args[i] = new SubQueryProjection(type, proj); //new ProjectionExpression(type, proj.Source, proj.Projector);
+                        changed = true;
+                    }
+                }
+
+                if (changed)
+                {
+                    return Expression.New(node.Constructor, args);
+                }
+            }
+
+            return base.VisitNew(node);
+        }
+
         /// <summary>
         /// Determines whether an expression corresponds to a column
         /// </summary>
@@ -324,6 +351,14 @@ namespace LinqToDAX.Query
                     return _columnExpressionFactory.CreateLookupExpression(node);
                 case "Generate":
                     return BindGenerate(node.Arguments[0], node.Arguments[1], (LambdaExpression)node.Arguments[2]);
+                case "UseRelationship":
+                    var arg1 = (ColumnExpression)Visit(node.Arguments[0]);
+                    var arg2 = (ColumnExpression)Visit(node.Arguments[1]);
+                    return new UseRelationshipExpression(arg1, arg2);
+                case "ApplyRelationship":
+                    var columnexp = (ColumnExpression)Visit(node.Arguments[0]);
+                    var columnname = ((ConstantExpression)node.Arguments[1]).Value as string;
+                    return new UseRelationshipExpression(columnexp, new ColumnExpression(columnexp.Type, columnexp.NodeType, columnname, columnname, string.Empty));
             }
 
             return CreateMappedMeasureExpression(node);
@@ -423,7 +458,7 @@ namespace LinqToDAX.Query
                     new SummarizeExpression(p.Type, pc1.Columns, projection.Source),
                     p.Projector);
             }
-
+        
             ProjectedColumns pc = new ColumnProjector(CanBeColumn).ProjectColumns(body);
            
             return new ProjectionExpression(
@@ -490,8 +525,6 @@ namespace LinqToDAX.Query
             var projection = (ProjectionExpression)Visit(source);
             _parameterMap[predicate.Parameters[0]] = projection.Projector;
             Expression where = Visit(predicate.Body);
-            bool hasMeasure = new Finder<MeasureExpression>().Has(where); // new MeasureFinder().HasMeasure(where);
-
             FilterConditionVisitor filterConditionVisitor = FilterConditionVisitor.CreateDefault();
             filterConditionVisitor.Visit(where);
             var fcondition = filterConditionVisitor.FilterCondition;

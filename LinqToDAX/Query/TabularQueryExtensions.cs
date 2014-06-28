@@ -6,22 +6,21 @@
 //   Extension Methods for translating DAX functions in Linq queries
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-using LinqToDAX.Query.DAXExpression;
-
 namespace LinqToDAX.Query
 {
     using System;
     using System.Linq;
     using System.Linq.Expressions;
+    using DAXExpression;
     using TabularEntities;
-
+    
     /// <summary>
     ///     Extension Methods for translating DAX functions in Linq queries
     /// </summary>
     public static class TabularQueryExtensions
     {
         /// <summary>
-        /// DAX Calculatetable function with table filter
+        /// DAX CALCULATETABLE function with table filter
         /// The CALCULATETABLE function changes the context in which the data is filtered,
         /// and evaluates the expression in the new context that you specify. 
         /// For each column used in a filter argument, 
@@ -69,6 +68,7 @@ namespace LinqToDAX.Query
             return (TabularTable<TData>) source.Provider.CreateQuery<TData>(resultExpression);
         }
 
+        
         public static T Average<T>(this T column)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
@@ -138,12 +138,12 @@ namespace LinqToDAX.Query
         }
 
 
-        public static long DistinctCount<T>(this T column, bool filter)
+        public static long? DistinctCount<T>(this T column, bool filter)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }
 
-        public static long DistinctCount<T>(this T column, ITabularData filterExp)
+        public static long? DistinctCount<T>(this T column, ITabularData filterExp)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }
@@ -158,6 +158,31 @@ namespace LinqToDAX.Query
         /// <param name="lookupdict">should be an even number of column referring properties of some table</param>
         /// <returns></returns>
         public static T LookupValue<T, TSearch>(this T target, params TSearch[] lookupdict)
+        {
+            throw new NotImplementedException("Only available in a tabular query expression");
+        }
+
+        /// <summary>
+        /// Creates a UseRelationship function in the DAX expression.
+        /// </summary>
+        /// <typeparam name="T">type of related columns</typeparam>
+        /// <param name="source">source of the relationship</param>
+        /// <param name="target">target of the relationship</param>
+        /// <returns>virtually a boolean to be applicable inside where</returns>
+        public static bool UseRelationship<T>(this T source, T target)
+        {
+            throw new NotImplementedException("Only available in a tabular query expression");
+        }
+
+        /// <summary>
+        /// Creates a UseRelationship function in the DAX expression by giving a column name as string.
+        /// Useful to parameterize relationships in code.
+        /// </summary>
+        /// <typeparam name="T">type of related columns</typeparam>
+        /// <param name="source">source of the relationship</param>
+        /// <param name="target">target of the relationship</param>
+        /// <returns>virtually a boolean to be applicable inside where</returns>
+        public static bool ApplyRelationship<T>(this T source, string target)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }
@@ -344,7 +369,7 @@ namespace LinqToDAX.Query
         /// <param name="table"></param>
         /// <param name="projector"></param>
         /// <returns></returns>
-        public static int Countx<T, TValue>(this IQueryable<T> table, Func<T, TValue> projector)
+        public static long? Countx<T, TValue>(this IQueryable<T> table, Func<T, TValue> projector)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }

@@ -19,6 +19,7 @@ namespace LinqToDAX.QueryFormatter
     ///<summary>
     /// This class is responsible to assemble the actual DAX query string
     ///</summary>
+    /// 
     internal class TabularQueryFormatter : DaxExpressionVisitor
     {
         /// <summary>
@@ -56,6 +57,16 @@ namespace LinqToDAX.QueryFormatter
             this.Builder.Append("EVALUATE\n");
             Visit(node);
             return this.Builder.ToString();
+        }
+
+        /// <summary>
+        /// Skip subordinate queries 
+        /// </summary>
+        /// <param name="projectionExpression">sub query</param>
+        /// <returns>the expression</returns>
+        protected override Expression VisitSubQuery(SubQueryProjection projectionExpression)
+        {
+            return projectionExpression;
         }
 
         /// <summary>
@@ -357,23 +368,26 @@ namespace LinqToDAX.QueryFormatter
             switch (Type.GetTypeCode(node.Value.GetType()))
             {
                 case TypeCode.DateTime:
+                    var dateString = ((DateTime)node.Value).ToString("yyyy-MM-dd");
                     this.Builder.Append("DATEVALUE(\"");
-                    System.Threading.Thread.CurrentThread.CurrentCulture =
-                        System.Globalization.CultureInfo.InvariantCulture;
-                    var date = (DateTime)node.Value;
-                    var dateString = String.Format("{0}-{1}-{2}", date.Year, date.Month, date.Day);
                     this.Builder.Append(dateString);
                     this.Builder.Append("\")");
                     break;
                 case TypeCode.Boolean:
                     this.Builder.Append(node.Value);
                     break;
+                case TypeCode.Char:
                 case TypeCode.String:
                     this.Builder.Append("\"");
                     this.Builder.Append(node.Value);
                     this.Builder.Append("\"");
                     break;
-                default:
+                
+                case TypeCode.Decimal:
+                case TypeCode.Double:
+                case TypeCode.Int16:
+                case TypeCode.Int32:
+                case TypeCode.Int64:
                     this.Builder.Append(node.Value);
                     break;
             }
@@ -448,14 +462,14 @@ namespace LinqToDAX.QueryFormatter
                     this.Builder.Append(")");
                     break;
 
-                    // case ExpressionType.Convert:
-                    //    Visit(node.Operand);
-                    //    break;
+                case ExpressionType.Convert:
+                    Visit(node.Operand);
+                    break;
+
                 default:
                     throw new NotImplementedException("Only not unary operator is supported yet");
             }
-
-            return base.Visit(node);
+            return node;
         }
 
         /// <summary>
@@ -477,8 +491,22 @@ namespace LinqToDAX.QueryFormatter
                     return this.Visit(col);
                 }
             }
-
             return base.VisitMember(node);
+        }
+
+        /// <summary>
+        /// Format UseRelationship.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        protected override Expression VisitUseRelationship(UseRelationshipExpression node)
+        {
+            this.Builder.Append("USERELATIONSHIP(");
+            this.Visit(node.Source);
+            this.Builder.Append(",");
+            this.Visit(node.Target);
+            this.Builder.Append(")");
+            return node;
         }
 
         /// <summary>

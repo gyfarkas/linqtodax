@@ -8,6 +8,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System;
 using LinqToDAX.Query.DAXExpression;
 
 namespace LinqToDAX.Query
@@ -27,6 +28,11 @@ namespace LinqToDAX.Query
         private static MethodInfo _getValue;
 
         /// <summary>
+        /// Reflected method to execute a subordinate query expression
+        /// </summary>
+        private static MethodInfo _executeSubQuery;
+
+        /// <summary>
         /// parameter expression used for the compiled lambda expression
         /// </summary>
         private ParameterExpression _row;
@@ -39,6 +45,7 @@ namespace LinqToDAX.Query
             if (_getValue == null)
             {
                 _getValue = typeof(ProjectionRow).GetMethod("GetValue");
+                _executeSubQuery = typeof(ProjectionRow).GetMethod("ExecuteSubQuery");
             }
         }
 
@@ -54,16 +61,38 @@ namespace LinqToDAX.Query
             return Expression.Lambda(body, _row);
         }
 
-        /// <summary>
-        /// Handles Projection expression projector part
-        /// </summary>
-        /// <param name="projectionExpression">projection expression to visit</param>
-        /// <returns>processed projector</returns>
         protected override Expression VisitProjection(ProjectionExpression projectionExpression)
         {
             return Visit(projectionExpression.Projector);
+        }    
+
+        protected override Expression VisitSubQuery(SubQueryProjection projectionExpression)
+        {
+            var exp = (DaxExpression)base.Visit(projectionExpression.Exp.Source);
+            var projection = new ProjectionExpression(exp, projectionExpression.Exp.Projector);
+            var q = new SubQueryProjection(projectionExpression.Type, projection);
+            LambdaExpression subQuery = Expression.Lambda(q, _row);
+            if (projectionExpression.Type.IsGenericType)
+            {
+                Type elementType = TypeSystem.GetElementType(subQuery.Body.Type);
+                MethodInfo mi = _executeSubQuery.MakeGenericMethod(elementType);
+                return Expression.Convert(Expression.Call(_row, mi, Expression.Constant(subQuery)), projectionExpression.Type);
+            }
+
+            return base.Visit(projectionExpression);
         }
 
+        protected override Expression VisitBinary(BinaryExpression node)
+        {
+            if (node.NodeType == ExpressionType.Equal)
+            {
+                var left = node.Left;
+                var right = Visit(node.Right);
+                return Expression.MakeBinary(node.NodeType, left, right);
+            }
+
+            return base.VisitBinary(node);
+        }
         /// <summary>
         /// creates a call to get value of an aggregation function like "SUMX" etc.
         /// </summary>

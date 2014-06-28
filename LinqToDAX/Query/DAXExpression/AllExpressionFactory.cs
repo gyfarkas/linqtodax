@@ -61,7 +61,6 @@ namespace LinqToDAX.Query.DAXExpression
                 {
                     return new AllSelectedExpression(returnType, arg);
                 }
-
                 return new AllExpression(returnType, arg);
             }
 

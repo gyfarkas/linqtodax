@@ -7,6 +7,7 @@ using NUnit.Framework;
 using System;
 using System.Linq;
 using TabularEntities;
+
 using Customer = AdventureWorks.Customer;
 namespace UnitTests
 {
@@ -300,14 +301,19 @@ namespace UnitTests
             var q =
                 from customer in _db.CustomerSet
                 where customer.FirstName == "Tony"
-                select new DummyTest
-                {
-                    SomeInt = customer.TotalCarsOwned.Min(customer.FirstName == tony),
-                    SomeString = customer.LastName
+                select
+                new {
+                    Tony = "tony",
+                    Test = new DummyTest
+                    {
+                        SomeInt = customer.TotalCarsOwned.Min(customer.FirstName == tony),
+                        SomeString = customer.LastName
+                    }
+                
                 };
             var result = q.ToList();
-            result.Should().BeOfType<List<DummyTest>>();
-            result.Select(x => x.SomeString)
+            result.FirstOrDefault().Test.Should().BeOfType<DummyTest>();
+            result.Select(x => x.Test.SomeString)
                 .Should().Contain("Xu");
         }
 
@@ -455,6 +461,9 @@ namespace UnitTests
         [Test]
         public void GenerateTest()
         {
+            var h = "hello";
+            var w = "World";
+            var a = new[] {1,2,3};
             var q =
                 from c in _db.SalesTerritorySet
                 select new { c.SalesTerritoryGroup };
@@ -466,9 +475,31 @@ namespace UnitTests
                     Cat = sales.ProductCategoryName,
                     sum = (from s in _db.ResellerSalesSet select new { s.SalesAmount }).Sumx(x => x.SalesAmount)
                 };
-            var result = q.Generate(q2, (x, y) => new { x.SalesTerritoryGroup, y.Cat, y.sum }).Take(3);
-            result.ToList().Should().NotBeNull();
+            var result = q.Generate(q2, (x, y) => new { x.SalesTerritoryGroup, y.Cat, y.sum, Message = h + w , Array = a}).Take(3).ToList();
+            result.Should().NotBeNull();
 
+        }
+
+        [Test]
+        public void CalculateTableGenerateTest()
+        {
+            var q =
+               from c in _db.SalesTerritorySet
+               select new { c.SalesTerritoryGroup };
+            var filter =
+                from c in _db.SalesTerritorySet
+                //where c.SalesTerritoryCountry == "USA"
+                select c.SalesTerritoryGroup;
+            var q2 =
+                from sales in _db.ProductCategorySet
+                select new
+                {
+                    Cat = sales.ProductCategoryName,
+                    sum = (from s in _db.ResellerSalesSet select new { s.SalesAmount }).Sumx(x => x.SalesAmount)
+                };
+            var result = q.CalculateTable(filter).Generate(q2, (x, y) => new { List = new List<string>{ x.SalesTerritoryGroup, y.Cat} , y.sum}).Take(3);
+            var temp = result.ToList();
+            temp.Should().NotBeNull();
         }
 
         [Test]
@@ -533,5 +564,124 @@ namespace UnitTests
             result.Should().Contain(new { CurrencyCode = "USD", LastName = "Yang" });
         }
 
+        [Test]
+        public void UseRelationshipTest()
+        {
+            var query =
+                from date in _db.DateSet
+                from sales in _db.InternetSalesSet
+                where
+               (sales.RelatedCurrency.CurrencyCode == "USD" || sales.RelatedCustomer.LastName == "Xu") &&
+               (sales.RelatedCustomer.LastName == "Yang" || "Xu" == sales.RelatedCustomer.LastName) &&
+               sales.InternetTotalSales() > 0
+               && date.DateKey.UseRelationship(sales.ShipDateKey)
+                select new
+                {
+                    sales.RelatedCurrency.CurrencyCode,
+                    sales.RelatedCustomer.LastName
+                };
+            var result = query.ToList();
+            result.Should().Contain(new { CurrencyCode = "USD", LastName = "Yang" });
+        }
+
+        [Test]
+        public void ApplyRelationshipTest()
+        {
+            var query =
+                from date in _db.DateSet
+                from sales in _db.InternetSalesSet
+                where
+               (sales.RelatedCurrency.CurrencyCode == "USD" || sales.RelatedCustomer.LastName == "Xu") &&
+               (sales.RelatedCustomer.LastName == "Yang" || "Xu" == sales.RelatedCustomer.LastName) &&
+               sales.InternetTotalSales() > 0
+               && date.DateKey.ApplyRelationship("'Internet Sales'[ShipDateKey]")
+                select new
+                {
+                    sales.RelatedCurrency.CurrencyCode,
+                    sales.RelatedCustomer.LastName
+                };
+            var result = query.ToList();
+            result.Should().Contain(new { CurrencyCode = "USD", LastName = "Yang" });
+        }
+
+        [Test]
+        public void CheckDateTest()
+        {
+            var query =
+                from sales in _db.InternetSalesSet
+                where sales.DueDate > new System.DateTime(2010,05,25)
+                select new
+                {
+                    sales.RelatedCurrency.CurrencyCode,
+                    sales.RelatedCustomer.LastName
+                };
+
+            Logger checkDate = (msg => msg.Should().Contain("2010-05-25"));
+           // ((TabularQueryProvider)query.Provider).Log += checkDate;
+            var result = query.ToList();
+            //((TabularQueryProvider)query.Provider).Log -= checkDate;
+        }
+
+        [Test]
+        public void EmbeddedQureyTest()
+        {
+            var query =
+                from sales in _db.InternetSalesSet
+                where sales.RelatedCustomer.LastName == "Xu"
+                select new
+                {
+                    Key = sales.CustomerKey,
+                    Key2 = sales.RelatedCustomer.CustomerKey,
+                    Name = sales.RelatedCustomer.LastName,
+                    Customers = (from customer in _db.CustomerSet
+                                 where customer.CustomerKey == sales.CustomerKey
+                                select new
+                                {
+                                    Name = customer.FirstName,
+                                    Value = 1
+                                }),
+                    //MainName = sales.RelatedCustomer.FirstName
+                };
+            var res = query.ToArray();
+            res.Should().NotBeNull();
+        }
+
+        [Test]
+        public void ComplexFilterCondition()
+        {
+            var query =
+                from sales in _db.InternetSalesSet
+                select sales.ProductKey.DistinctCount(
+                        sales.RelatedDate.ForAll(
+                            sales.RelatedDate.Date2 < 
+                            (from s in _db.InternetSalesSet 
+                             where s.ProductKey.ForAll()
+                             select new
+                             {
+                                s.ProductKey,
+                                s.DueDate
+                             }).Maxx(x => x.DueDate))
+                        );
+            var res = query.ToList().FirstOrDefault();
+            Assert.IsNotNull(res);
+            res.Should().Be(158);
+        }
+
+        [Test]
+        public void ListInitTest()
+        {
+            var query =
+                from sales in _db.InternetSalesSet
+                select new
+                {
+                    List = new List<string>
+                    {
+                        sales.RelatedCustomer.FirstName,
+                        sales.RelatedCustomer.LastName
+                    }
+                };
+            var result = query.ToList().FirstOrDefault();
+            result.List.Should().NotBeEmpty();
+        }
     }
 }

@@ -62,15 +62,20 @@ namespace LinqToDAX.Query.DAXExpression
         /// </summary>
         /// <param name="expression">member expression</param>
         /// <returns>column expression</returns>
-        internal ColumnExpression CreateColumnExpression(MemberExpression expression)
+        internal Expression CreateColumnExpression(MemberExpression expression)
         {
+            if (expression.Expression.NodeType == ExpressionType.Constant)
+            {
+                return expression;
+            }
+
             var mapping =
                 expression.Member.GetCustomAttribute(typeof(TabularMappingAttribute)) as TabularMappingAttribute;
             if (mapping == null)
             {
                 throw new TabularException("Invalid lookup arguments");
             }
-
+           
             string columnName = expression.Member.Name;
             Type columnType = GetColumnType(expression.Member);
             string dbname = mapping.ColumnName;
@@ -240,7 +245,7 @@ namespace LinqToDAX.Query.DAXExpression
         {
             Type t = node.Method.ReturnType;
             ColumnExpression target =
-                CreateColumnExpression((MemberExpression)node.Arguments[0]);
+                CreateColumnExpression((MemberExpression)node.Arguments[0]) as ColumnExpression;
             var dict = (NewArrayExpression)node.Arguments[1];
             
             // the arguments count should be even in order to be able to create a lookup in them
@@ -253,18 +258,24 @@ namespace LinqToDAX.Query.DAXExpression
             for (int counter = 0; counter < dict.Expressions.Count; counter += 2)
             {
                 ColumnExpression c1 =
-                    CreateColumnExpression((MemberExpression)dict.Expressions[counter]);
+                    CreateColumnExpression((MemberExpression)dict.Expressions[counter]) as ColumnExpression;
                 ColumnExpression c2 =
-                    CreateColumnExpression((MemberExpression)dict.Expressions[counter + 1]);
-                lookupList.Add(Tuple.Create(c1, c2));
+                    CreateColumnExpression((MemberExpression)dict.Expressions[counter + 1]) as ColumnExpression;
+                if (c1 != null && c2 != null)
+                {
+                    lookupList.Add(Tuple.Create(c1, c2));
+                }
             }
+            if (target != null)
+            {
+                // TODO: Might need more indiretion here
+                string dbstr = "LOOKUPVALUE(" + target.DbName + "," +
+                               lookupList.Select(pair => pair.Item1.DbName + "," + pair.Item2.DbName)
+                                   .Aggregate((x, y) => x + "," + y) + ")";
 
-            // TODO: Might need more indiretion here
-            string dbstr = "LOOKUPVALUE(" + target.DbName + "," +
-                           lookupList.Select(pair => pair.Item1.DbName + "," + pair.Item2.DbName)
-                               .Aggregate((x, y) => x + "," + y) + ")";
-
-            return new LookupExpression(t, target, lookupList, dbstr);
+                return new LookupExpression(t, target, lookupList, dbstr);
+            }
+            throw new TabularException("Invalid lookup arguments");
         }
     }
 }
