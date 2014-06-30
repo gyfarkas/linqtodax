@@ -6,9 +6,6 @@
 //   Defines the TabularQueryBinder type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
-using FunctionalUtilities;
-
 namespace LinqToDAX.Query
 {
     using System;
@@ -56,14 +53,14 @@ namespace LinqToDAX.Query
         /// </summary>
         internal TabularQueryBinder()
         {
-            _columnProjector = new ColumnProjector(CanBeColumn);
+            _columnProjector = new ColumnProjector(TabularExpressionHelper.CanBeColumn);
             _columnExpressionFactory = new ColumnExpressionFactory(this);
             _tableFactory = new TableFactory(this);
             _allExpressionFactory = new AllExpressionFactory(this);
             _parameterMap = new Dictionary<ParameterExpression, Expression>();
         }
 
-       /// <summary>
+        /// <summary>
        /// Visits the expression passed and replaces sub-expressions, 
        /// and creates a projection expression in the end. 
        /// with DAX specific parts while collecting information as well for further processing
@@ -125,13 +122,13 @@ namespace LinqToDAX.Query
                 switch (node.Method.Name)
                 {
                     case "Where":
-                        return BindWhere(node.Type, node.Arguments[0], (LambdaExpression)StripQuotes(node.Arguments[1]));
+                        return BindWhere(node.Type, node.Arguments[0], (LambdaExpression)TabularExpressionHelper.StripQuotes(node.Arguments[1]));
                     case "Select":
-                        return BindSelect(node.Type, node.Arguments[0], (LambdaExpression)StripQuotes(node.Arguments[1]));
+                        return BindSelect(node.Type, node.Arguments[0], (LambdaExpression)TabularExpressionHelper.StripQuotes(node.Arguments[1]));
                     case "Take":
                         return BindTake(node.Type, node.Arguments[0], (ConstantExpression)node.Arguments[1]);
                     case "SelectMany":
-                        return BindSelectMany(node.Type, node.Arguments[0], (LambdaExpression)StripQuotes(node.Arguments[1]), (LambdaExpression)StripQuotes(node.Arguments[2]));
+                        return BindSelectMany(node.Type, node.Arguments[0], (LambdaExpression)TabularExpressionHelper.StripQuotes(node.Arguments[1]), (LambdaExpression)TabularExpressionHelper.StripQuotes(node.Arguments[2]));
                     default:
                         throw new NotImplementedException(string.Format("no method to deal with : {0}", node.Method.Name));
                 }
@@ -253,10 +250,10 @@ namespace LinqToDAX.Query
         }
 
         /// <summary>
-        /// Cptures subqueries
+        /// Captures subordinate queries
         /// </summary>
-        /// <param name="node"></param>
-        /// <returns></returns>
+        /// <param name="node">node to be bound</param>
+        /// <returns>new expression with subordinate queries transformed</returns>
         protected override Expression VisitNew(NewExpression node)
         {
             var args = node.Arguments.Select(Visit).ToArray();
@@ -284,34 +281,6 @@ namespace LinqToDAX.Query
             return base.VisitNew(node);
         }
 
-        /// <summary>
-        /// Determines whether an expression corresponds to a column
-        /// </summary>
-        /// <param name="node">expression to be inspected</param>
-        /// <returns>boolean expressing whether the expression is a column</returns>
-        private static bool CanBeColumn(Expression node)
-        {
-            return node.NodeType == (ExpressionType)DaxExpressionType.Column ||
-                   node.NodeType == (ExpressionType)DaxExpressionType.Measure ||
-                   node.NodeType == (ExpressionType)DaxExpressionType.Lookup ||
-                   node.NodeType == (ExpressionType)DaxExpressionType.XAggregation;
-        }
-
-        /// <summary>
-        /// Removes quotes
-        /// </summary>
-        /// <param name="e">quoted expression</param>
-        /// <returns>expression without quotes</returns>
-        private static Expression StripQuotes(Expression e)
-        {
-            while (e.NodeType == ExpressionType.Quote)
-            {
-                e = (e as UnaryExpression) != null ? (e as UnaryExpression).Operand : e;
-            }
-
-            return e;
-        }
-       
         /// <summary>
         /// Selects the appropriate method to deal with functions, methods defined as extensions
         /// </summary>
@@ -417,7 +386,7 @@ namespace LinqToDAX.Query
         {
             var table = (expression is ProjectionExpression) ? (ProjectionExpression)expression : (ProjectionExpression)Visit(expression);
             var hasMeasure = new Finder<MeasureExpression>(); // MeasureFinder();
-            ProjectedColumns pc = new ColumnProjector(CanBeColumn).ProjectColumns(table.Projector);
+            ProjectedColumns pc = new ColumnProjector(TabularExpressionHelper.CanBeColumn).ProjectColumns(table.Projector);
 
             Expression orderby;
 
@@ -460,13 +429,13 @@ namespace LinqToDAX.Query
             if ((DaxExpressionType)body.NodeType == DaxExpressionType.Projection)
             {
                 var p = (ProjectionExpression)body;
-                ProjectedColumns pc1 = new ColumnProjector(CanBeColumn).ProjectColumns(p.Projector);
+                ProjectedColumns pc1 = new ColumnProjector(TabularExpressionHelper.CanBeColumn).ProjectColumns(p.Projector);
                 return new ProjectionExpression(
                     new SummarizeExpression(p.Type, pc1.Columns, projection.Source),
                     p.Projector);
             }
         
-            ProjectedColumns pc = new ColumnProjector(CanBeColumn).ProjectColumns(body);
+            ProjectedColumns pc = new ColumnProjector(TabularExpressionHelper.CanBeColumn).ProjectColumns(body);
            
             return new ProjectionExpression(
                 DaxExpressionFactory.Create(type, pc.Columns.Distinct(), projection.Source), pc.Projector);

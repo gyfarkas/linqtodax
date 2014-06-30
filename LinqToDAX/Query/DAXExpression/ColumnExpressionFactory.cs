@@ -133,7 +133,7 @@ namespace LinqToDAX.Query.DAXExpression
         {
             _measureCounter++;
             var table = (ProjectionExpression)_binder.Visit(node.Arguments[0]);
-            var lambda = (LambdaExpression)node.Arguments[1];
+            var lambda = (LambdaExpression)TabularExpressionHelper.StripQuotes(node.Arguments[1]);
             var init = lambda.Body as MemberExpression;
             if (init == null)
             {
@@ -141,7 +141,7 @@ namespace LinqToDAX.Query.DAXExpression
             }
 
             MemberInfo member = init.Member;
-            string  tableName = FindTableName(node);
+            string tableName = FindTableName(node);
            
             var projector = table.Projector as NewExpression;
             var column = (ColumnExpression)FindColumnExpression(projector, member);
@@ -176,7 +176,7 @@ namespace LinqToDAX.Query.DAXExpression
             return new XAggregationExpression(aggregationType, table, null, "[" + aggregationType + _measureCounter + "]", tableName, type);
         }
 
-        private static string FindTableName(MethodCallExpression node)
+        internal static string FindTableName(Expression node)
         {
             var tableName = string.Empty;
             var finder = new Finder<ConstantExpression>();

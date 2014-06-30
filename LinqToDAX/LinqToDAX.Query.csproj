@@ -65,6 +65,7 @@
     <Compile Include="Query\Replacer.cs" />
     <Compile Include="Query\TabularEvaluator.cs" />
     <Compile Include="QueryFormatter\XAggregationVisitor.cs" />
+    <Compile Include="Query\TabularExpressionHelper.cs" />
     <Compile Include="TabularException.cs" />
     <Compile Include="Query\TabularQueryBinder.cs" />
     <Compile Include="Query\TabularQueryExtensions.cs" />

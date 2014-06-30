@@ -1,23 +1,28 @@
-﻿using System;
-using System.Linq.Expressions;
-
-namespace LinqToDAX.Query.DAXExpression
+﻿namespace LinqToDAX.Query.DAXExpression
 {
+    using System;
+    using System.Linq.Expressions;
+
     /// <summary>
     /// Decorator class for subordinate queries 
     /// </summary>
     internal class SubQueryProjection : DaxExpression
     {
-        internal ProjectionExpression Projection { get; private set; }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="SubQueryProjection"/> class.
         /// </summary>
-        /// <param name="proj">Projection to be decorated as subordinate</param>
+        /// <param name="type">runtime type of projection</param>
+        /// <param name="exp">Projection to be decorated as subordinate</param>
         internal SubQueryProjection(Type type, ProjectionExpression exp)
             : base((ExpressionType)DaxExpressionType.SubQuery, type)
         {
             this.Projection = exp;
         }
+
+        /// <summary>
+        /// Gets the captured projection expression
+        /// </summary>
+        internal ProjectionExpression Projection { get; private set; }
+
     }
 }

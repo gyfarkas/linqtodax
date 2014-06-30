@@ -27,7 +27,7 @@ namespace UnitTests
     public class QueryTests
     {
         private const string ConnectionString =
-            "Provider=MSOLAP;Data Source=localhost;Initial Catalog=AdventureWorks Tabular Model SQL 2012;";
+            "Provider=MSOLAP;Data Source=LDDEVCUBEDB2;Initial Catalog=AdventureWorks Tabular Model SQL 2012;";
         private readonly AdventureWorksContext _db;
 
         public QueryTests()
@@ -312,7 +312,12 @@ namespace UnitTests
                 
                 };
             var result = q.ToList();
-            result.FirstOrDefault().Test.Should().BeOfType<DummyTest>();
+            var first = result.FirstOrDefault();
+            if (first != null)
+            {
+                first.Test.Should().BeOfType<DummyTest>();
+            }
+
             result.Select(x => x.Test.SomeString)
                 .Should().Contain("Xu");
         }
@@ -389,6 +394,64 @@ namespace UnitTests
             var result = q.ToList();
             result.Should().NotBeNull();
         }
+
+
+        [Test]
+        public void SumxStandalone()
+        {
+            var s = (from x in _db.InternetSalesSet
+                where x.RelatedCustomer.RelatedGeography.City == "London"
+                select
+                    new
+                    {
+                        x.RelatedCustomer.CustomerId,
+                        v = x.SalesAmount.Sum()
+                    }).Take(10).Sumx(x => x.v);
+            s.Should().NotBe(null);
+        }
+
+        [Test]
+        public void AverageXStandalone()
+        {
+            var s = (from x in _db.InternetSalesSet
+                     where x.RelatedCustomer.RelatedGeography.City == "London"
+                     select
+                         new
+                         {
+                             x.RelatedCustomer.CustomerId,
+                             v = x.SalesAmount.Sum()
+                         }).Take(10).Averagex(x => x.v);
+            s.Should().NotBe(null);
+        }
+
+        [Test]
+        public void MinXStandalone()
+        {
+            var s = (from x in _db.InternetSalesSet
+                     where x.RelatedCustomer.RelatedGeography.City == "London"
+                     select
+                         new
+                         {
+                             x.RelatedCustomer.CustomerId,
+                             v = x.SalesAmount.Sum()
+                         }).Take(10).Minx(x => x.v);
+            s.Should().NotBe(null);
+        }
+
+        [Test]
+        public void MaxXStandalone()
+        {
+            var s = (from x in _db.InternetSalesSet
+                     where x.RelatedCustomer.RelatedGeography.City == "London"
+                     select
+                         new
+                         {
+                             x.RelatedCustomer.CustomerId,
+                             v = x.SalesAmount.Sum()
+                         }).Take(10).Maxx(x => x.v);
+            s.Should().NotBe(null);
+        }
+
 
         [Test]
         public void RankTest()
@@ -616,10 +679,11 @@ namespace UnitTests
                     sales.RelatedCustomer.LastName
                 };
 
-            Logger checkDate = (msg => msg.Should().Contain("2010-05-25"));
-           // ((TabularQueryProvider)query.Provider).Log += checkDate;
-            var result = query.ToList();
-            //((TabularQueryProvider)query.Provider).Log -= checkDate;
+           Logger checkDate = (msg => msg.Should().Contain("2010-05-25"));
+           ((TabularQueryProvider)query.Provider).Log += checkDate;
+           var result = query.ToList();
+           ((TabularQueryProvider)query.Provider).Log -= checkDate;
+            result.Should().NotBeNull();
         }
 
         [Test]
@@ -627,14 +691,13 @@ namespace UnitTests
         {
             var query =
                 from sales in _db.InternetSalesSet
-                where sales.RelatedCustomer.LastName == "Xu"
+                where sales.RelatedCustomer.LastName == "Xu" || sales.RelatedCustomer.LastName == "Smith" 
+                let n = sales.RelatedCustomer.LastName
                 select new
                 {
-                    Key = sales.CustomerKey,
-                    Key2 = sales.RelatedCustomer.CustomerKey,
                     Name = sales.RelatedCustomer.LastName,
                     Customers = (from customer in _db.CustomerSet
-                                 where customer.CustomerKey == sales.CustomerKey
+                                 where customer.LastName == n
                                 select new
                                 {
                                     Name = customer.FirstName,
@@ -681,7 +744,14 @@ namespace UnitTests
                     }
                 };
             var result = query.ToList().FirstOrDefault();
-            result.List.Should().NotBeEmpty();
+            if (result != null)
+            {
+                result.List.Should().NotBeEmpty();
+            }
+            if (result == null)
+            {
+                Assert.Fail("result should not be null");
+            }
         }
 
         [Test]
@@ -695,7 +765,21 @@ namespace UnitTests
                          select customer.CustomerKey).CountRows()
                 };
             var res = q.ToList();
+
+            var count = (from customer in _db.CustomerSet
+                select customer.CustomerKey).CountRows();
+            
             res.Should().NotBeNull();
+            count.Should().Be(res.First().C);
+        }
+
+        [Test]
+        public void CountXTest()
+        {
+            var q =
+                (from customer in _db.CustomerSet select new {customer.LastName, customer.FirstName}).Countx(
+                    x => x.LastName);
+            q.Should().NotBe(null);
         }
     }
 }
