@@ -548,19 +548,20 @@ namespace UnitTests
         {
             var q =
                from c in _db.SalesTerritorySet
-               select new { c.SalesTerritoryGroup };
+               select  c.SalesTerritoryGroup ;
             var filter =
                 from c in _db.SalesTerritorySet
                 //where c.SalesTerritoryCountry == "USA"
                 select c.SalesTerritoryGroup;
             var q2 =
                 from sales in _db.ProductCategorySet
-                select new
+                select new Something
                 {
                     Cat = sales.ProductCategoryName,
                     sum = (from s in _db.ResellerSalesSet select new { s.SalesAmount }).Sumx(x => x.SalesAmount)
                 };
-            var result = q.CalculateTable(filter).Generate(q2, (x, y) => new { List = new List<string>{ x.SalesTerritoryGroup, y.Cat} , y.sum}).Take(3);
+            var result = q.CalculateTable(filter)
+                .Generate(q2, (x, y) => new Other {List = new List<string> {x, y.Cat}, Sum = y.sum, Test = y.Cat == "not" }).Take(3);
             var temp = result.ToList();
             temp.Should().NotBeNull();
         }

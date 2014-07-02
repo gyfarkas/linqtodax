@@ -13,10 +13,34 @@ namespace LinqToDAX.Query
     using System.Linq.Expressions;
     using System.Reflection;
     using DAXExpression;
+
+
+    internal class SubQueryProjectionBuilder : ProjectionBuilder
+    {
+        /// <summary>
+        /// When analysing binary expressions in subqueries we only evaluate the right operand
+        /// </summary>
+        /// <param name="node">binary expression</param>
+        /// <returns>converted expression</returns>
+        
+        protected override Expression VisitBinary(BinaryExpression node)
+        {
+            if (node.NodeType == ExpressionType.Equal)
+            {
+                var left = node.Left;
+                var right = Visit(node.Right);
+                return Expression.MakeBinary(node.NodeType, left, right);
+            }
+
+            return base.VisitBinary(node);
+        }
+    }
+
     /// <summary>
     /// This class builds up the reader instance via reflection
     ///  that is used to get the data from the database.
     /// </summary>
+    /// 
     internal class ProjectionBuilder : DaxExpressionVisitor
     {
         /// <summary>
@@ -44,6 +68,7 @@ namespace LinqToDAX.Query
                 _getValue = typeof(ProjectionRow).GetMethod("GetValue");
                 _executeSubQuery = typeof(ProjectionRow).GetMethod("ExecuteSubQuery");
             }
+            _row = Expression.Parameter(typeof(ProjectionRow), "row");
         }
 
         /// <summary>
@@ -53,7 +78,6 @@ namespace LinqToDAX.Query
         /// <returns>lambda expression</returns>
         internal LambdaExpression Build(Expression exp)
         {
-            _row = Expression.Parameter(typeof(ProjectionRow), "row");
             Expression body = Visit(exp);
             return Expression.Lambda(body, _row);
         }
@@ -75,7 +99,7 @@ namespace LinqToDAX.Query
         /// <returns>converted projection</returns>
         protected override Expression VisitSubQuery(SubQueryProjection projectionExpression)
         {
-            var exp = (DaxExpression)base.Visit(projectionExpression.Projection.Source);
+            var exp = (DaxExpression)new SubQueryProjectionBuilder().Visit(projectionExpression.Projection.Source);
             var projection = new ProjectionExpression(exp, projectionExpression.Projection.Projector);
             var q = new SubQueryProjection(projectionExpression.Type, projection);
             LambdaExpression subQuery = Expression.Lambda(q, _row);
@@ -89,22 +113,6 @@ namespace LinqToDAX.Query
             return base.Visit(projectionExpression);
         }
 
-        /// <summary>
-        /// When analysing binary expressions in subqueries we only evaluate the right operand
-        /// </summary>
-        /// <param name="node">binary expression</param>
-        /// <returns>converted expression</returns>
-        protected override Expression VisitBinary(BinaryExpression node)
-        {
-            if (node.NodeType == ExpressionType.Equal)
-            {
-                var left = node.Left;
-                var right = Visit(node.Right);
-                return Expression.MakeBinary(node.NodeType, left, right);
-            }
-
-            return base.VisitBinary(node);
-        }
         /// <summary>
         /// creates a call to get value of an aggregation function like "SUMX" etc.
         /// </summary>
@@ -184,7 +192,7 @@ namespace LinqToDAX.Query
         /// </summary>
         /// <param name="name">basic measure name</param>
         /// <returns>correctly bracketed measure reference name</returns>
-        private static string MeasureNameReference(string name)
+        protected static string MeasureNameReference(string name)
         {
             var n = name.StartsWith("[") ? name : "[" + name;
             return n.EndsWith("]") ? n : n + "]";
