@@ -22,6 +22,7 @@
 // Generated Code 
 using LinqToDAX;
 using System;
+using System.Linq;
 using TabularEntities;
 namespace AdventureWorks
 {
@@ -73,14 +74,27 @@ var entities =
 
 
 #>
-public class AdventureWorksContext
+public interface IAdventureworks
+{
+ <#
+foreach (var e in entities)
+{
+#>
+	 IQueryable<<#=ToIdentifier(e.Name)#>> <#=ToIdentifier(e.Name)#>Set { get;  } 
+<#
+}
+#>
+}
+
+
+public class AdventureWorksContext : IAdventureworks
 {
 	
 <#
 foreach (var e in entities)
 {
 #>
-	public TabularTable<<#=ToIdentifier(e.Name)#>> <#=ToIdentifier(e.Name)#>Set { get; private set; } 
+	public IQueryable<<#=ToIdentifier(e.Name)#>> <#=ToIdentifier(e.Name)#>Set { get; private set; } 
 <#
 }
 #>

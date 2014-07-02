@@ -35,7 +35,7 @@ namespace LinqToDAX.Query
         /// <typeparam name="TData">type of table elements</typeparam>
         /// <typeparam name="TFilter">Filter query type</typeparam>
         /// <returns>a tabular table with the data from source filtered by the filter table</returns>
-        public static TabularTable<TData> CalculateTable<TData, TFilter>(this IQueryable<TData> source, IQueryable<TFilter> filterTable)
+        public static IQueryable<TData> CalculateTable<TData, TFilter>(this IQueryable<TData> source, IQueryable<TFilter> filterTable)
         {
             Expression sourceExpression = TabularEvaluator.PartialEval(source.Expression);
             Expression filterExpression = TabularEvaluator.PartialEval(filterTable.Expression);
@@ -48,7 +48,7 @@ namespace LinqToDAX.Query
                     elevatedType,
                     calculateTableExpression,
                     projection.Projector);
-            return (TabularTable<TData>)source.Provider.CreateQuery<TData>(resultProjectionExpression);
+            return source.Provider.CreateQuery<TData>(resultProjectionExpression);
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace LinqToDAX.Query
         /// <typeparam name="TSource">first table type</typeparam>
         /// <typeparam name="TGenerator">Generator table type</typeparam>
         /// <returns>a new tabular table</returns>
-        public static TabularTable<TData> Generate<TData, TSource, TGenerator>(
+        public static IQueryable<TData> Generate<TData, TSource, TGenerator>(
             this IQueryable<TSource> source,
             IQueryable<TGenerator> generator,
             Expression<Func<TSource, TGenerator, TData>> selectorFunc)
@@ -73,7 +73,7 @@ namespace LinqToDAX.Query
             Expression sourceExpression = TabularEvaluator.PartialEval(source.Expression);
             Expression generatorExpression = TabularEvaluator.PartialEval(generator.Expression);
             var resultExpression = binder.BindGenerate(sourceExpression, generatorExpression, selectorFunc);
-            return (TabularTable<TData>)source.Provider.CreateQuery<TData>(resultExpression);
+            return source.Provider.CreateQuery<TData>(resultExpression);
         }
 
         /// <summary>

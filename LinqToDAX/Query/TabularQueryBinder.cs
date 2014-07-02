@@ -149,7 +149,7 @@ namespace LinqToDAX.Query
         /// <returns>transformed construct</returns>
         protected override Expression VisitConstant(ConstantExpression node)
         {
-            if (node.Type.UnderlyingSystemType.Name == typeof(TabularTable<>).Name)
+            if (node.Type.UnderlyingSystemType.Name == typeof(TabularTable<>).Name || (node.Value != null && node.Value.GetType().Name == typeof(TabularTable<>).Name))
             {
                 var queryable = node.Value as IQueryable;
                 if (queryable != null)
