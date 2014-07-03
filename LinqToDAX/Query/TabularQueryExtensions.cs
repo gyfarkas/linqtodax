@@ -605,7 +605,8 @@ namespace LinqToDAX.Query
             }
 
             var binder = new TabularQueryBinder();
-            var t = (ProjectionExpression)binder.Bind(table.Expression);
+            var e = TabularEvaluator.PartialEval(table.Expression);
+            var t = (ProjectionExpression)binder.Bind(e);
             string tableName = ColumnExpressionFactory.FindTableName(table.Expression);
             var type = typeof(long?);
             var aggregation = new XAggregationExpression(AggregationType.CountRows, t, null, "[" + "Count" + "]", tableName, type);
@@ -624,7 +625,8 @@ namespace LinqToDAX.Query
         private static ProjectionExpression ProjectionExpression<T, TValue>(Type returnType, IQueryable<T> table, Expression<Func<T, TValue>> projector, AggregationType aggregationType, MethodInfo method)
         {
             var binder = new TabularQueryBinder();
-            var methodCall = Expression.Call(null, method, new[] { table.Expression, projector });
+            var e = TabularEvaluator.PartialEval(table.Expression);
+            var methodCall = Expression.Call(null, method, new[] { e, projector });
             var type = returnType;
             var aggregation = new ColumnExpressionFactory(binder).CreateXAggregation(aggregationType, methodCall);
             var measure = new MeasureDeclaration("Result", "Result", aggregation);

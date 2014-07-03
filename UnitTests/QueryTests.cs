@@ -427,8 +427,9 @@ namespace UnitTests
         [Test]
         public void MinXStandalone()
         {
+            var city = "London";
             var s = (from x in _db.InternetSalesSet
-                     where x.RelatedCustomer.RelatedGeography.City == "London"
+                     where x.RelatedCustomer.RelatedGeography.City == city
                      select
                          new
                          {
@@ -758,16 +759,19 @@ namespace UnitTests
         [Test]
         public void CountrowsTest()
         {
+            var xu = "Xu";
             var q =
                 from sales in _db.InternetSalesSet
                 select new
                 {
                     C = (from customer in _db.CustomerSet
+                         where customer.LastName == xu
                          select customer.CustomerKey).CountRows()
                 };
             var res = q.ToList();
 
             var count = (from customer in _db.CustomerSet
+                         where customer.LastName == xu
                 select customer.CustomerKey).CountRows();
             
             res.Should().NotBeNull();
