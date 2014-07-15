@@ -6,6 +6,9 @@
 //   This class is responsible to assemble the actual DAX query string
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
+
+using System.Globalization;
+
 namespace LinqToDAX.QueryFormatter
 {
     using System;
@@ -368,7 +371,7 @@ namespace LinqToDAX.QueryFormatter
             switch (Type.GetTypeCode(node.Value.GetType()))
             {
                 case TypeCode.DateTime:
-                    var dateString = ((DateTime)node.Value).ToString("yyyy-MM-dd");
+                    var dateString = ((DateTime)node.Value).ToString("yyyy'-'MM'-'dd' 'HH':'mm':'ss");
                     this.Builder.Append("DATEVALUE(\"");
                     this.Builder.Append(dateString);
                     this.Builder.Append("\")");
