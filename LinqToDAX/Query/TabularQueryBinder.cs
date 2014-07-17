@@ -129,6 +129,11 @@ namespace LinqToDAX.Query
                         return BindTake(node.Type, node.Arguments[0], (ConstantExpression)node.Arguments[1]);
                     case "SelectMany":
                         return BindSelectMany(node.Type, node.Arguments[0], (LambdaExpression)TabularExpressionHelper.StripQuotes(node.Arguments[1]), (LambdaExpression)TabularExpressionHelper.StripQuotes(node.Arguments[2]));
+                    case "OrderBy":
+                    case "OrderByDescending":
+                    case "ThenBy":
+                    case "ThenByDescending":
+                        return BindOrderBy(node.Type, node.Arguments[0],(LambdaExpression) TabularExpressionHelper.StripQuotes(node.Arguments[1]));
                     default:
                         throw new NotImplementedException(string.Format("no method to deal with : {0}", node.Method.Name));
                 }
@@ -140,6 +145,11 @@ namespace LinqToDAX.Query
             }
 
             return TabularFunction(node);
+        }
+
+        private Expression BindOrderBy(Type type, Expression expression, LambdaExpression lambdaExpression)
+        {
+                                 throw new NotImplementedException("order by");
         }
 
         /// <summary>

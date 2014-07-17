@@ -542,7 +542,7 @@ namespace LinqToDAX.Query
         /// <returns>average value of the column in the query</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "projector", Justification = "Method is translated"),
         System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "table", Justification = "Method is translated")]
-        public static TValue Averagex<T, TValue>(this IQueryable<T> table, Expression<Func<T, TValue>> projector)
+        public static TValue? Averagex<T, TValue>(this IQueryable<T> table, Expression<Func<T, TValue>> projector) where TValue : struct 
         {
             var provider = table.Provider as TabularQueryProvider;
             if (provider == null)
@@ -552,10 +552,10 @@ namespace LinqToDAX.Query
 
             var m = (MethodInfo)MethodBase.GetCurrentMethod();
             var row = ProjectionExpression(typeof(TValue), table, projector, AggregationType.Avg, m.MakeGenericMethod(new[] { typeof(T), typeof(TValue) }));
-            var res = provider.Execute(row) as IEnumerable<TValue>;
+            var res = provider.Execute(row) as IEnumerable<TValue?>;
             if (res == null)
             {
-                return default(TValue);
+                return null;
             }
 
             return res.FirstOrDefault();

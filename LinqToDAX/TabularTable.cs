@@ -12,7 +12,7 @@ namespace LinqToDAX
     ///     You see the IQueryable contains an expression that represents a snippet of code that
     ///     if turned into actual code and executed would reconstruct that very same IQueryable (or its equivalent).
     /// </summary>
-    public class TabularTable<TData> : IQueryable<TData>
+    public class TabularTable<TData> : IOrderedQueryable<TData>
     {
         private readonly Expression _expression;
 
