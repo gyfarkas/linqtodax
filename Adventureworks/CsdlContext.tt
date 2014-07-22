@@ -51,6 +51,7 @@ const string commandXml = @"
     </Discover>
     </Body>
     </Envelope>";
+
 var xml = server.SendXmlaRequest(XmlaRequestType.Discover, new StringReader(commandXml));
 var doc =  XDocument.Load(xml);
 var assoc =

@@ -430,6 +430,76 @@ public String SalesTerritoryRegion {get; set;}
 public String SalesTerritoryCountry {get; set;}
 [TabularMapping("'Sales Territory'[Sales Territory Group]", "'Sales Territory'")]
 public String SalesTerritoryGroup {get; set;}
+[TabularMeasureMapping("[Distinct Count Sales Orders]")]
+public Int64 DistinctCountSalesOrders()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Distinct Count Sales Orders]")]
+public Int64 DistinctCountSalesOrders(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Previous Quarter Gross Profit Proportion to QTD]")]
+public Decimal TotalPreviousQuarterGrossProfitProportionToQtd()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Previous Quarter Gross Profit Proportion to QTD]")]
+public Decimal TotalPreviousQuarterGrossProfitProportionToQtd(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Units Sold]")]
+public Int64 TotalUnitsSold()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Units Sold]")]
+public Int64 TotalUnitsSold(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Current Quarter Sales]")]
+public Decimal TotalCurrentQuarterSales()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Current Quarter Sales]")]
+public Decimal TotalCurrentQuarterSales(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Freight]")]
+public Decimal TotalFreight()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Freight]")]
+public Decimal TotalFreight(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Sales - Sales Territory sliced by Employee]")]
+public Decimal TotalSalesSalesTerritorySlicedByEmployee()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Sales - Sales Territory sliced by Employee]")]
+public Decimal TotalSalesSalesTerritorySlicedByEmployee(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Products Cost]")]
+public Decimal TotalProductsCost()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Products Cost]")]
+public Decimal TotalProductsCost(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
 [TabularMeasureMapping("[Total Previous Quarter Gross Profit]")]
 public Decimal TotalPreviousQuarterGrossProfit()
 {
@@ -450,16 +520,6 @@ public Double TotalCurrentQuarterGrossProfitPerformance(bool filter)
 {
 		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
 }
-[TabularMeasureMapping("[Distinct Count Sales Orders]")]
-public Int64 DistinctCountSalesOrders()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Distinct Count Sales Orders]")]
-public Int64 DistinctCountSalesOrders(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
 [TabularMeasureMapping("[Total Gross Profit]")]
 public Decimal TotalGrossProfit()
 {
@@ -467,126 +527,6 @@ public Decimal TotalGrossProfit()
 }
 [TabularMeasureMapping("[Total Gross Profit]")]
 public Decimal TotalGrossProfit(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Sales - Sales Territory sliced by Employee]")]
-public Decimal TotalSalesSalesTerritorySlicedByEmployee()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Sales - Sales Territory sliced by Employee]")]
-public Decimal TotalSalesSalesTerritorySlicedByEmployee(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Sales]")]
-public Decimal TotalSales()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Sales]")]
-public Decimal TotalSales(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Current Quarter Sales]")]
-public Decimal TotalCurrentQuarterSales()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Current Quarter Sales]")]
-public Decimal TotalCurrentQuarterSales(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Current Quarter Sales Performance]")]
-public Double TotalCurrentQuarterSalesPerformance()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Current Quarter Sales Performance]")]
-public Double TotalCurrentQuarterSalesPerformance(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Previous Quarter Sales]")]
-public Decimal TotalPreviousQuarterSales()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Previous Quarter Sales]")]
-public Decimal TotalPreviousQuarterSales(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Previous Quarter Gross Profit Proportion to QTD]")]
-public Decimal TotalPreviousQuarterGrossProfitProportionToQtd()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Previous Quarter Gross Profit Proportion to QTD]")]
-public Decimal TotalPreviousQuarterGrossProfitProportionToQtd(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Products Cost]")]
-public Decimal TotalProductsCost()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Products Cost]")]
-public Decimal TotalProductsCost(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Current Quarter Gross Profit]")]
-public Decimal TotalCurrentQuarterGrossProfit()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Current Quarter Gross Profit]")]
-public Decimal TotalCurrentQuarterGrossProfit(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Units Sold]")]
-public Int64 TotalUnitsSold()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Units Sold]")]
-public Int64 TotalUnitsSold(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Freight]")]
-public Decimal TotalFreight()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Freight]")]
-public Decimal TotalFreight(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Previous Quarter Sales Proportion to QTD]")]
-public Decimal TotalPreviousQuarterSalesProportionToQtd()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Previous Quarter Sales Proportion to QTD]")]
-public Decimal TotalPreviousQuarterSalesProportionToQtd(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Tax Amount]")]
-public Decimal TotalTaxAmount()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Tax Amount]")]
-public Decimal TotalTaxAmount(bool filter)
 {
 		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
 }
@@ -607,6 +547,66 @@ public Int64 OrderLinesCount()
 }
 [TabularMeasureMapping("[Order Lines Count]")]
 public Int64 OrderLinesCount(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Previous Quarter Sales]")]
+public Decimal TotalPreviousQuarterSales()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Previous Quarter Sales]")]
+public Decimal TotalPreviousQuarterSales(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Current Quarter Gross Profit]")]
+public Decimal TotalCurrentQuarterGrossProfit()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Current Quarter Gross Profit]")]
+public Decimal TotalCurrentQuarterGrossProfit(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Tax Amount]")]
+public Decimal TotalTaxAmount()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Tax Amount]")]
+public Decimal TotalTaxAmount(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Current Quarter Sales Performance]")]
+public Double TotalCurrentQuarterSalesPerformance()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Current Quarter Sales Performance]")]
+public Double TotalCurrentQuarterSalesPerformance(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Sales]")]
+public Decimal TotalSales()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Sales]")]
+public Decimal TotalSales(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Previous Quarter Sales Proportion to QTD]")]
+public Decimal TotalPreviousQuarterSalesProportionToQtd()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Previous Quarter Sales Proportion to QTD]")]
+public Decimal TotalPreviousQuarterSalesProportionToQtd(bool filter)
 {
 		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
 }
@@ -668,36 +668,6 @@ public DateTime DueDate {get; set;}
 public DateTime ShipDate {get; set;}
 [TabularMapping("'Internet Sales'[Gross Profit]", "'Internet Sales'")]
 public Decimal GrossProfit {get; set;}
-[TabularMeasureMapping("[Internet Current Quarter Gross Profit Performance]")]
-public Double InternetCurrentQuarterGrossProfitPerformance()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Internet Current Quarter Gross Profit Performance]")]
-public Double InternetCurrentQuarterGrossProfitPerformance(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Internet Total Units]")]
-public Int64 InternetTotalUnits()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Internet Total Units]")]
-public Int64 InternetTotalUnits(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Internet Previous Quarter Sales]")]
-public Decimal InternetPreviousQuarterSales()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Internet Previous Quarter Sales]")]
-public Decimal InternetPreviousQuarterSales(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
 [TabularMeasureMapping("[Internet Current Quarter Gross Profit]")]
 public Decimal InternetCurrentQuarterGrossProfit()
 {
@@ -705,56 +675,6 @@ public Decimal InternetCurrentQuarterGrossProfit()
 }
 [TabularMeasureMapping("[Internet Current Quarter Gross Profit]")]
 public Decimal InternetCurrentQuarterGrossProfit(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Internet Order Lines Count]")]
-public Int64 InternetOrderLinesCount()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Internet Order Lines Count]")]
-public Int64 InternetOrderLinesCount(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Internet Total Discount Amount]")]
-public Decimal InternetTotalDiscountAmount()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Internet Total Discount Amount]")]
-public Decimal InternetTotalDiscountAmount(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Internet Total Sales]")]
-public Decimal InternetTotalSales()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Internet Total Sales]")]
-public Decimal InternetTotalSales(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Internet Total Gross Profit]")]
-public Decimal InternetTotalGrossProfit()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Internet Total Gross Profit]")]
-public Decimal InternetTotalGrossProfit(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Internet Total Freight]")]
-public Decimal InternetTotalFreight()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Internet Total Freight]")]
-public Decimal InternetTotalFreight(bool filter)
 {
 		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
 }
@@ -768,26 +688,6 @@ public Decimal InternetTotalProductCost(bool filter)
 {
 		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
 }
-[TabularMeasureMapping("[Internet Current Quarter Sales Performance]")]
-public Double InternetCurrentQuarterSalesPerformance()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Internet Current Quarter Sales Performance]")]
-public Double InternetCurrentQuarterSalesPerformance(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Internet Previous Quarter Gross Profit]")]
-public Decimal InternetPreviousQuarterGrossProfit()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Internet Previous Quarter Gross Profit]")]
-public Decimal InternetPreviousQuarterGrossProfit(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
 [TabularMeasureMapping("[Internet Previous Quarter Sales Proportion to QTD]")]
 public Decimal InternetPreviousQuarterSalesProportionToQtd()
 {
@@ -795,6 +695,16 @@ public Decimal InternetPreviousQuarterSalesProportionToQtd()
 }
 [TabularMeasureMapping("[Internet Previous Quarter Sales Proportion to QTD]")]
 public Decimal InternetPreviousQuarterSalesProportionToQtd(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Internet Total Discount Amount]")]
+public Decimal InternetTotalDiscountAmount()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Internet Total Discount Amount]")]
+public Decimal InternetTotalDiscountAmount(bool filter)
 {
 		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
 }
@@ -808,13 +718,43 @@ public Decimal InternetCurrentQuarterSales(bool filter)
 {
 		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
 }
-[TabularMeasureMapping("[Internet Total Tax Amount]")]
-public Decimal InternetTotalTaxAmount()
+[TabularMeasureMapping("[Internet Current Quarter Gross Profit Performance]")]
+public Double InternetCurrentQuarterGrossProfitPerformance()
 {
 		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
 }
-[TabularMeasureMapping("[Internet Total Tax Amount]")]
-public Decimal InternetTotalTaxAmount(bool filter)
+[TabularMeasureMapping("[Internet Current Quarter Gross Profit Performance]")]
+public Double InternetCurrentQuarterGrossProfitPerformance(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Internet Current Quarter Sales Performance]")]
+public Double InternetCurrentQuarterSalesPerformance()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Internet Current Quarter Sales Performance]")]
+public Double InternetCurrentQuarterSalesPerformance(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Internet Total Sales]")]
+public Decimal InternetTotalSales()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Internet Total Sales]")]
+public Decimal InternetTotalSales(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Internet Previous Quarter Sales]")]
+public Decimal InternetPreviousQuarterSales()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Internet Previous Quarter Sales]")]
+public Decimal InternetPreviousQuarterSales(bool filter)
 {
 		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
 }
@@ -825,6 +765,66 @@ public Decimal InternetPreviousQuarterGrossProfitProportionToQtd()
 }
 [TabularMeasureMapping("[Internet Previous Quarter Gross Profit Proportion to QTD]")]
 public Decimal InternetPreviousQuarterGrossProfitProportionToQtd(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Internet Total Freight]")]
+public Decimal InternetTotalFreight()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Internet Total Freight]")]
+public Decimal InternetTotalFreight(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Internet Previous Quarter Gross Profit]")]
+public Decimal InternetPreviousQuarterGrossProfit()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Internet Previous Quarter Gross Profit]")]
+public Decimal InternetPreviousQuarterGrossProfit(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Internet Total Tax Amount]")]
+public Decimal InternetTotalTaxAmount()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Internet Total Tax Amount]")]
+public Decimal InternetTotalTaxAmount(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Internet Order Lines Count]")]
+public Int64 InternetOrderLinesCount()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Internet Order Lines Count]")]
+public Int64 InternetOrderLinesCount(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Internet Total Units]")]
+public Int64 InternetTotalUnits()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Internet Total Units]")]
+public Int64 InternetTotalUnits(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Internet Total Gross Profit]")]
+public Decimal InternetTotalGrossProfit()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Internet Total Gross Profit]")]
+public Decimal InternetTotalGrossProfit(bool filter)
 {
 		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
 }
@@ -874,46 +874,6 @@ public Int64 ProductDateOverstocked {get; set;}
 public Int64 ProductDateUnderstocked {get; set;}
 [TabularMapping("'Product Inventory'[Product-Date Negative Stock]", "'Product Inventory'")]
 public Int64 ProductDateNegativeStock {get; set;}
-[TabularMeasureMapping("[Total Units Movement]")]
-public Int64 TotalUnitsMovement()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Units Movement]")]
-public Int64 TotalUnitsMovement(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Inventory Value Performance]")]
-public Double TotalInventoryValuePerformance()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Inventory Value Performance]")]
-public Double TotalInventoryValuePerformance(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Products with Negative Stock]")]
-public Int64 ProductsWithNegativeStock()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Products with Negative Stock]")]
-public Int64 ProductsWithNegativeStock(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Inventory Optimal Value]")]
-public Decimal TotalInventoryOptimalValue()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Inventory Optimal Value]")]
-public Decimal TotalInventoryOptimalValue(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
 [TabularMeasureMapping("[Total Units In]")]
 public Int64 TotalUnitsIn()
 {
@@ -924,43 +884,13 @@ public Int64 TotalUnitsIn(bool filter)
 {
 		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
 }
-[TabularMeasureMapping("[Total Inventory Value]")]
-public Decimal TotalInventoryValue()
+[TabularMeasureMapping("[Total Units Movement]")]
+public Int64 TotalUnitsMovement()
 {
 		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
 }
-[TabularMeasureMapping("[Total Inventory Value]")]
-public Decimal TotalInventoryValue(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Units]")]
-public Int64 TotalUnits()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Units]")]
-public Int64 TotalUnits(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Inventory Maximum Value]")]
-public Decimal TotalInventoryMaximumValue()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Inventory Maximum Value]")]
-public Decimal TotalInventoryMaximumValue(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Units Out]")]
-public Int64 TotalUnitsOut()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Total Units Out]")]
-public Int64 TotalUnitsOut(bool filter)
+[TabularMeasureMapping("[Total Units Movement]")]
+public Int64 TotalUnitsMovement(bool filter)
 {
 		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
 }
@@ -974,6 +904,66 @@ public Int64 ProductsUnderstocked(bool filter)
 {
 		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
 }
+[TabularMeasureMapping("[Total Units]")]
+public Int64 TotalUnits()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Units]")]
+public Int64 TotalUnits(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Inventory Optimal Value]")]
+public Decimal TotalInventoryOptimalValue()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Inventory Optimal Value]")]
+public Decimal TotalInventoryOptimalValue(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Inventory Value]")]
+public Decimal TotalInventoryValue()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Inventory Value]")]
+public Decimal TotalInventoryValue(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Inventory Maximum Value]")]
+public Decimal TotalInventoryMaximumValue()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Inventory Maximum Value]")]
+public Decimal TotalInventoryMaximumValue(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Inventory Value Performance]")]
+public Double TotalInventoryValuePerformance()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Inventory Value Performance]")]
+public Double TotalInventoryValuePerformance(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Units Out]")]
+public Int64 TotalUnitsOut()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Total Units Out]")]
+public Int64 TotalUnitsOut(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
 [TabularMeasureMapping("[Products OverStocked]")]
 public Int64 ProductsOverstocked()
 {
@@ -981,6 +971,16 @@ public Int64 ProductsOverstocked()
 }
 [TabularMeasureMapping("[Products OverStocked]")]
 public Int64 ProductsOverstocked(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Products with Negative Stock]")]
+public Int64 ProductsWithNegativeStock()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Products with Negative Stock]")]
+public Int64 ProductsWithNegativeStock(bool filter)
 {
 		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
 }
@@ -1046,13 +1046,23 @@ public DateTime DueDate {get; set;}
 public DateTime ShipDate {get; set;}
 [TabularMapping("'Reseller Sales'[Gross Profit]", "'Reseller Sales'")]
 public Decimal GrossProfit {get; set;}
-[TabularMeasureMapping("[Reseller Total Freight]")]
-public Decimal ResellerTotalFreight()
+[TabularMeasureMapping("[Reseller Previous Quarter Gross Profit Proportion to QTD]")]
+public Decimal ResellerPreviousQuarterGrossProfitProportionToQtd()
 {
 		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
 }
-[TabularMeasureMapping("[Reseller Total Freight]")]
-public Decimal ResellerTotalFreight(bool filter)
+[TabularMeasureMapping("[Reseller Previous Quarter Gross Profit Proportion to QTD]")]
+public Decimal ResellerPreviousQuarterGrossProfitProportionToQtd(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Reseller Total Sales]")]
+public Decimal ResellerTotalSales()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Reseller Total Sales]")]
+public Decimal ResellerTotalSales(bool filter)
 {
 		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
 }
@@ -1063,6 +1073,76 @@ public Decimal ResellerPreviousQuarterSales()
 }
 [TabularMeasureMapping("[Reseller Previous Quarter Sales]")]
 public Decimal ResellerPreviousQuarterSales(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Reseller Total Sales - Sales Territory sliced by Employee]")]
+public Decimal ResellerTotalSalesSalesTerritorySlicedByEmployee()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Reseller Total Sales - Sales Territory sliced by Employee]")]
+public Decimal ResellerTotalSalesSalesTerritorySlicedByEmployee(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Reseller Current Quarter Sales]")]
+public Decimal ResellerCurrentQuarterSales()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Reseller Current Quarter Sales]")]
+public Decimal ResellerCurrentQuarterSales(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Reseller Total Discount Amount]")]
+public Decimal ResellerTotalDiscountAmount()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Reseller Total Discount Amount]")]
+public Decimal ResellerTotalDiscountAmount(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Reseller Total Product Cost]")]
+public Decimal ResellerTotalProductCost()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Reseller Total Product Cost]")]
+public Decimal ResellerTotalProductCost(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Reseller Current Quarter Sales Performance]")]
+public Double ResellerCurrentQuarterSalesPerformance()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Reseller Current Quarter Sales Performance]")]
+public Double ResellerCurrentQuarterSalesPerformance(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Reseller Previous Quarter Sales Proportion to QTD]")]
+public Decimal ResellerPreviousQuarterSalesProportionToQtd()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Reseller Previous Quarter Sales Proportion to QTD]")]
+public Decimal ResellerPreviousQuarterSalesProportionToQtd(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Reseller Total Tax Amount]")]
+public Decimal ResellerTotalTaxAmount()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Reseller Total Tax Amount]")]
+public Decimal ResellerTotalTaxAmount(bool filter)
 {
 		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
 }
@@ -1086,43 +1166,23 @@ public Int64 ResellerDistinctCountSalesOrder(bool filter)
 {
 		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
 }
-[TabularMeasureMapping("[Reseller Current Quarter Sales Performance]")]
-public Double ResellerCurrentQuarterSalesPerformance()
+[TabularMeasureMapping("[Reseller Total Units]")]
+public Int64 ResellerTotalUnits()
 {
 		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
 }
-[TabularMeasureMapping("[Reseller Current Quarter Sales Performance]")]
-public Double ResellerCurrentQuarterSalesPerformance(bool filter)
+[TabularMeasureMapping("[Reseller Total Units]")]
+public Int64 ResellerTotalUnits(bool filter)
 {
 		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
 }
-[TabularMeasureMapping("[Reseller Previous Quarter Gross Profit Proportion to QTD]")]
-public Decimal ResellerPreviousQuarterGrossProfitProportionToQtd()
+[TabularMeasureMapping("[Reseller Total Freight]")]
+public Decimal ResellerTotalFreight()
 {
 		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
 }
-[TabularMeasureMapping("[Reseller Previous Quarter Gross Profit Proportion to QTD]")]
-public Decimal ResellerPreviousQuarterGrossProfitProportionToQtd(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Reseller Total Sales - Sales Territory sliced by Employee]")]
-public Decimal ResellerTotalSalesSalesTerritorySlicedByEmployee()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Reseller Total Sales - Sales Territory sliced by Employee]")]
-public Decimal ResellerTotalSalesSalesTerritorySlicedByEmployee(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Reseller Total Discount Amount]")]
-public Decimal ResellerTotalDiscountAmount()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Reseller Total Discount Amount]")]
-public Decimal ResellerTotalDiscountAmount(bool filter)
+[TabularMeasureMapping("[Reseller Total Freight]")]
+public Decimal ResellerTotalFreight(bool filter)
 {
 		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
 }
@@ -1136,36 +1196,6 @@ public Decimal ResellerTotalSalesSalesTerritorySlicedByReseller(bool filter)
 {
 		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
 }
-[TabularMeasureMapping("[Reseller Total Units]")]
-public Int64 ResellerTotalUnits()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Reseller Total Units]")]
-public Int64 ResellerTotalUnits(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Reseller Total Product Cost]")]
-public Decimal ResellerTotalProductCost()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Reseller Total Product Cost]")]
-public Decimal ResellerTotalProductCost(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Reseller Current Quarter Sales]")]
-public Decimal ResellerCurrentQuarterSales()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Reseller Current Quarter Sales]")]
-public Decimal ResellerCurrentQuarterSales(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
 [TabularMeasureMapping("[Reseller Total Gross Profit]")]
 public Decimal ResellerTotalGrossProfit()
 {
@@ -1173,6 +1203,16 @@ public Decimal ResellerTotalGrossProfit()
 }
 [TabularMeasureMapping("[Reseller Total Gross Profit]")]
 public Decimal ResellerTotalGrossProfit(bool filter)
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Reseller Previous Quarter Gross Profit]")]
+public Decimal ResellerPreviousQuarterGrossProfit()
+{
+		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
+}
+[TabularMeasureMapping("[Reseller Previous Quarter Gross Profit]")]
+public Decimal ResellerPreviousQuarterGrossProfit(bool filter)
 {
 		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
 }
@@ -1193,46 +1233,6 @@ public Decimal ResellerCurrentQuarterGrossProfit()
 }
 [TabularMeasureMapping("[Reseller Current Quarter Gross Profit]")]
 public Decimal ResellerCurrentQuarterGrossProfit(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Reseller Previous Quarter Gross Profit]")]
-public Decimal ResellerPreviousQuarterGrossProfit()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Reseller Previous Quarter Gross Profit]")]
-public Decimal ResellerPreviousQuarterGrossProfit(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Reseller Previous Quarter Sales Proportion to QTD]")]
-public Decimal ResellerPreviousQuarterSalesProportionToQtd()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Reseller Previous Quarter Sales Proportion to QTD]")]
-public Decimal ResellerPreviousQuarterSalesProportionToQtd(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Reseller Total Sales]")]
-public Decimal ResellerTotalSales()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Reseller Total Sales]")]
-public Decimal ResellerTotalSales(bool filter)
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Reseller Total Tax Amount]")]
-public Decimal ResellerTotalTaxAmount()
-{
-		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
-}
-[TabularMeasureMapping("[Reseller Total Tax Amount]")]
-public Decimal ResellerTotalTaxAmount(bool filter)
 {
 		throw new NotImplementedException("This method is only available in a LinqToDAX Query");
 }
