@@ -14,6 +14,8 @@ namespace LinqToDAX
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Query;
     using Query.DAXExpression;
     using QueryFormatter;
@@ -109,6 +111,47 @@ namespace LinqToDAX
            return (TResult)this.Execute(Translate(expression)); 
         }
 
+        /// <summary>
+        /// Asynchronous command execution 
+        /// </summary>
+        /// <typeparam name="TResult">type of the result</typeparam>
+        /// <param name="expression">expression to be executed on SSAS</param>
+        /// <param name="token">cancellation token</param>
+        /// <returns>Task result</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2100:Review SQL queries for security vulnerabilities", Justification = "There is no SQL here")]
+        public async Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken token)
+        {
+            var translateResult = Translate(expression);
+            if (token.IsCancellationRequested)
+            {
+                token.ThrowIfCancellationRequested();
+            }
+
+            if (Connection.State != ConnectionState.Open)
+            {
+                await Connection.OpenAsync(token);
+            }
+
+            var cmd = Connection.CreateCommand();
+            cmd.CommandText = translateResult.CommandText;
+            if (token.IsCancellationRequested)
+            {
+                token.ThrowIfCancellationRequested();
+            }
+
+            var reader = await cmd.ExecuteReaderAsync(token);
+
+            Type elementType = TypeSystem.GetElementType(translateResult.Projector.Body.Type);
+
+            var res = Activator.CreateInstance(
+                typeof(ProjectionReader<>).MakeGenericType(elementType),
+                BindingFlags.Instance | BindingFlags.NonPublic,
+                null,
+                new object[] { reader, translateResult.Projector.Compile(), this },
+                null);
+            return (TResult)res;
+        }
+
         private static TranslateResult Translate(Expression expression)
         {
             var projection = expression as ProjectionExpression;
@@ -125,6 +168,11 @@ namespace LinqToDAX
                 projection = (ProjectionExpression)new TabularQueryBinder().Bind(expression);
             }
 
+            if (projection == null)
+            {
+                throw new TabularException("Could not translate");
+            }
+
             string commandText = new TabularQueryFormatter().Format(projection.Source);
             
             LambdaExpression projector = new ProjectionBuilder().Build(projection.Projector);
@@ -136,7 +184,7 @@ namespace LinqToDAX
                 };
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2100:Review SQL queries for security vulnerabilities")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2100:Review SQL queries for security vulnerabilities", Justification = "There is no SQL here")]
         private object Execute(TranslateResult result)
         {
             Delegate projector = result.Projector.Compile();

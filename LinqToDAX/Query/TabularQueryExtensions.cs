@@ -6,6 +6,10 @@
 //   Extension Methods for translating DAX functions in Linq queries
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
+
+using System.Threading;
+using System.Threading.Tasks;
+
 namespace LinqToDAX.Query
 {
     using System;
@@ -19,7 +23,8 @@ namespace LinqToDAX.Query
     /// <summary>
     ///     Extension Methods for translating DAX functions in LINQ queries 
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "Methods are translated to DAX")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+        Justification = "Methods are translated to DAX")]
     public static class TabularQueryExtensions
     {
         /// <summary>
@@ -35,14 +40,15 @@ namespace LinqToDAX.Query
         /// <typeparam name="TData">type of table elements</typeparam>
         /// <typeparam name="TFilter">Filter query type</typeparam>
         /// <returns>a tabular table with the data from source filtered by the filter table</returns>
-        public static IQueryable<TData> CalculateTable<TData, TFilter>(this IQueryable<TData> source, IQueryable<TFilter> filterTable)
+        public static IQueryable<TData> CalculateTable<TData, TFilter>(this IQueryable<TData> source,
+            IQueryable<TFilter> filterTable)
         {
             Expression sourceExpression = TabularEvaluator.PartialEval(source.Expression);
             Expression filterExpression = TabularEvaluator.PartialEval(filterTable.Expression);
-            var projection = (ProjectionExpression)new TabularQueryBinder().Bind(sourceExpression);
-            var filter = (ProjectionExpression)new TabularQueryBinder().Bind(filterExpression);
-            var calculateTableExpression = new CalculateTableExpression(typeof(TData), projection.Source, filter.Source);
-            Type elevatedType = typeof(TabularTable<>).MakeGenericType(projection.Projector.Type);
+            var projection = (ProjectionExpression) new TabularQueryBinder().Bind(sourceExpression);
+            var filter = (ProjectionExpression) new TabularQueryBinder().Bind(filterExpression);
+            var calculateTableExpression = new CalculateTableExpression(typeof (TData), projection.Source, filter.Source);
+            Type elevatedType = typeof (TabularTable<>).MakeGenericType(projection.Projector.Type);
             var resultProjectionExpression =
                 new ProjectionExpression(
                     elevatedType,
@@ -94,99 +100,125 @@ namespace LinqToDAX.Query
         /// <param name="column">LINQ column reference</param>
         /// <param name="filter">filter expression</param>
         /// <returns>average of the filtered values</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "column", Justification = "Method is translated"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "filter", Justification = "Method is translated")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+            MessageId = "column", Justification = "Method is translated"),
+         System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+             MessageId = "filter", Justification = "Method is translated")]
         public static T Average<T>(this T column, bool filter)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }
 
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "column", Justification = "Method is translated"),
-         System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "filterExp", Justification = "Method is translated")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+            MessageId = "column", Justification = "Method is translated"),
+         System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+             MessageId = "filterExp", Justification = "Method is translated")]
         public static T Average<T>(this T column, ITabularData filterExp)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "column", Justification = "Method is translated")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+            MessageId = "column", Justification = "Method is translated")]
         public static T Sum<T>(this T column)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }
 
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "column", Justification = "Method is translated"),
-        System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "filter", Justification = "Method is translated")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+            MessageId = "column", Justification = "Method is translated"),
+         System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+             MessageId = "filter", Justification = "Method is translated")]
         public static T Sum<T>(this T column, bool filter)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "column", Justification = "Method is translated"),
-        System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "filterExp", Justification = "Method is translated")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+            MessageId = "column", Justification = "Method is translated"),
+         System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+             MessageId = "filterExp", Justification = "Method is translated")]
         public static T Sum<T>(this T column, ITabularData filterExp)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "column", Justification = "Method is translated")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+            MessageId = "column", Justification = "Method is translated")]
         public static T Max<T>(this T column)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }
 
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "column", Justification = "Method is translated"),
-        System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "filter", Justification = "Method is translated")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+            MessageId = "column", Justification = "Method is translated"),
+         System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+             MessageId = "filter", Justification = "Method is translated")]
         public static T Max<T>(this T column, bool filter)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "filterExp", Justification = "Method is translated"),
-        System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "column", Justification = "Method is translated")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+            MessageId = "filterExp", Justification = "Method is translated"),
+         System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+             MessageId = "column", Justification = "Method is translated")]
         public static T Max<T>(this T column, ITabularData filterExp)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "column", Justification = "Method is translated")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+            MessageId = "column", Justification = "Method is translated")]
         public static T Min<T>(this T column)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }
 
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "column", Justification = "Method is translated"),
-        System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "filter", Justification = "Method is translated")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+            MessageId = "column", Justification = "Method is translated"),
+         System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+             MessageId = "filter", Justification = "Method is translated")]
         public static T Min<T>(this T column, bool filter)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "filterExp", Justification = "Method is translated")
-        , System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "column", Justification = "Method is translated")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+            MessageId = "filterExp", Justification = "Method is translated")
+        ,
+         System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+             MessageId = "column", Justification = "Method is translated")]
         public static T Min<T>(this T column, ITabularData filterExp)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "column", Justification = "Method is translated")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+            MessageId = "column", Justification = "Method is translated")]
         public static long DistinctCount<T>(this T column)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }
 
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "filter", Justification = "Method is translated"),
-        System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "column", Justification = "Method is translated")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+            MessageId = "filter", Justification = "Method is translated"),
+         System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+             MessageId = "column", Justification = "Method is translated")]
         public static long? DistinctCount<T>(this T column, bool filter)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "column", Justification = "Method is translated"),
-        System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "filterExp", Justification = "Method is translated")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+            MessageId = "column", Justification = "Method is translated"),
+         System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+             MessageId = "filterExp", Justification = "Method is translated")]
         public static long? DistinctCount<T>(this T column, ITabularData filterExp)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
@@ -201,8 +233,10 @@ namespace LinqToDAX.Query
         /// <param name="target">should be a property access referring to a column</param>
         /// <param name="lookupdict">should be an even number of column referring properties of some table</param>
         /// <returns></returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "target", Justification = "Method is translated"),
-        System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "lookupdict", Justification = "Method is translated")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+            MessageId = "target", Justification = "Method is translated"),
+         System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+             MessageId = "lookupdict", Justification = "Method is translated")]
         public static T LookupValue<T, TSearch>(this T target, params TSearch[] lookupdict)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
@@ -215,8 +249,10 @@ namespace LinqToDAX.Query
         /// <param name="source">source of the relationship</param>
         /// <param name="target">target of the relationship</param>
         /// <returns>virtually a boolean to be applicable inside where</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "source", Justification = "Method is translated"),
-        System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "target", Justification = "Method is translated")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+            MessageId = "source", Justification = "Method is translated"),
+         System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+             MessageId = "target", Justification = "Method is translated")]
         public static bool UseRelationship<T>(this T source, T target)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
@@ -230,8 +266,10 @@ namespace LinqToDAX.Query
         /// <param name="source">source of the relationship</param>
         /// <param name="target">target of the relationship</param>
         /// <returns>virtually a boolean to be applicable inside where</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "source", Justification = "Method is translated"),
-        System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "target", Justification = "Method is translated")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+            MessageId = "source", Justification = "Method is translated"),
+         System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+             MessageId = "target", Justification = "Method is translated")]
         public static bool ApplyRelationship<T>(this T source, string target)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
@@ -246,7 +284,8 @@ namespace LinqToDAX.Query
         /// <typeparam name="T">column type</typeparam>
         /// <param name="exp">column or table reference</param>
         /// <returns>boolean, the return value is never used, it is meant to be part of a filter expression in TabularTable Where()</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "exp", Justification = "Method is translated")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+            MessageId = "exp", Justification = "Method is translated")]
         public static bool ForAll<T>(this T exp)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
@@ -261,7 +300,8 @@ namespace LinqToDAX.Query
         /// <typeparam name="T">column type</typeparam>
         /// <param name="exp">column or table reference</param>
         /// <returns>boolean, the return value is never used, it is meant to be part of a filter expression in a TabularTable query Where()</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "exp", Justification = "Method is translated")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+            MessageId = "exp", Justification = "Method is translated")]
         public static bool ForAllSelected<T>(this T exp)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
@@ -278,8 +318,10 @@ namespace LinqToDAX.Query
         /// <param name="conditions">filters the table by these, conditions are translated</param>
         /// <typeparam name="T">expression type</typeparam>
         /// <returns>boolean, the return value is never used, it is meant to be part of a filter expression in TabularTable Where()</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "conditions", Justification = "Method is translated"),
-        System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "exp", Justification = "Method is translated")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+            MessageId = "conditions", Justification = "Method is translated"),
+         System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+             MessageId = "exp", Justification = "Method is translated")]
         public static bool ForAll<T>(this T exp, bool conditions)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
@@ -296,8 +338,10 @@ namespace LinqToDAX.Query
         /// <param name="conditions">filters the table by these, conditions are translated</param>
         /// <typeparam name="T">expression type</typeparam> 
         /// <returns>boolean, the return value is never used, it is meant to be part of a filter expression in TabularTable Where()</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "exp", Justification = "Method is translated"),
-        System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "conditions", Justification = "Method is translated")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+            MessageId = "exp", Justification = "Method is translated"),
+         System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+             MessageId = "conditions", Justification = "Method is translated")]
         public static bool ForAllSelected<T>(this T exp, bool conditions)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
@@ -313,9 +357,12 @@ namespace LinqToDAX.Query
         /// <typeparam name="T">table element type</typeparam>
         /// <typeparam name="TValue">sum value type</typeparam>
         /// <returns>Sum of the selected values</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "projector", Justification = "Method is translated"),
-        System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "table", Justification = "Method is translated")]
-        public static TValue? Sumx<T, TValue>(this IQueryable<T> table, Expression<Func<T, TValue>> projector) where TValue : struct
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+            MessageId = "projector", Justification = "Method is translated"),
+         System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+             MessageId = "table", Justification = "Method is translated")]
+        public static TValue? Sumx<T, TValue>(this IQueryable<T> table, Expression<Func<T, TValue>> projector)
+            where TValue : struct
         {
             var provider = table.Provider as TabularQueryProvider;
             if (provider == null)
@@ -323,8 +370,9 @@ namespace LinqToDAX.Query
                 throw new NotImplementedException("Only available in a tabular query expression");
             }
 
-            var m = (MethodInfo)MethodBase.GetCurrentMethod();
-            var row = ProjectionExpression(typeof(TValue?), table, projector, AggregationType.Sum, m.MakeGenericMethod(new[] { typeof(T), typeof(TValue) }));
+            var m = (MethodInfo) MethodBase.GetCurrentMethod();
+            var row = ProjectionExpression(typeof (TValue?), table, projector, AggregationType.Sum,
+                m.MakeGenericMethod(new[] {typeof (T), typeof (TValue)}));
             var res = provider.Execute(row) as IEnumerable<TValue?>;
             if (res == null)
             {
@@ -344,9 +392,12 @@ namespace LinqToDAX.Query
         /// <typeparam name="T">type of query table elements</typeparam>
         /// <typeparam name="TValue">type of column and result</typeparam>
         /// <returns>the maximum value of the result of the projection on the table</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "projector", Justification = "Method is translated"),
-        System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "table", Justification = "Method is translated")]
-        public static TValue? Maxx<T, TValue>(this IQueryable<T> table, Expression<Func<T, TValue>> projector) where TValue : struct
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+            MessageId = "projector", Justification = "Method is translated"),
+         System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+             MessageId = "table", Justification = "Method is translated")]
+        public static TValue? Maxx<T, TValue>(this IQueryable<T> table, Expression<Func<T, TValue>> projector)
+            where TValue : struct
         {
             var provider = table.Provider as TabularQueryProvider;
             if (provider == null)
@@ -354,8 +405,9 @@ namespace LinqToDAX.Query
                 throw new NotImplementedException("Only available in a tabular query expression");
             }
 
-            var m = (MethodInfo)MethodBase.GetCurrentMethod();
-            var row = ProjectionExpression(typeof(TValue), table, projector, AggregationType.Min, m.MakeGenericMethod(new[] { typeof(T), typeof(TValue) }));
+            var m = (MethodInfo) MethodBase.GetCurrentMethod();
+            var row = ProjectionExpression(typeof (TValue), table, projector, AggregationType.Min,
+                m.MakeGenericMethod(new[] {typeof (T), typeof (TValue)}));
             var res = provider.Execute(row) as IEnumerable<TValue>;
             if (res == null)
             {
@@ -375,9 +427,12 @@ namespace LinqToDAX.Query
         /// <typeparam name="T">table element type</typeparam>
         /// <typeparam name="TValue">result and column type</typeparam>
         /// <returns>sum of the column in the query</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Method is translated"),
-        System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "table", Justification = "Method is translated"),
-        System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "projector", Justification = "Method is translated")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design",
+            "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Method is translated"),
+         System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+             MessageId = "table", Justification = "Method is translated"),
+         System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+             MessageId = "projector", Justification = "Method is translated")]
         public static TValue? Sumx<T, TValue>(this IQueryable<T> table, Expression<Func<T, TValue?>> projector)
             where TValue : struct
         {
@@ -387,8 +442,9 @@ namespace LinqToDAX.Query
                 throw new NotImplementedException("Only available in a tabular query expression");
             }
 
-            var m = (MethodInfo)MethodBase.GetCurrentMethod();
-            var row = ProjectionExpression(typeof(TValue), table, projector, AggregationType.Sum, m.MakeGenericMethod(new[] { typeof(T), typeof(TValue) }));
+            var m = (MethodInfo) MethodBase.GetCurrentMethod();
+            var row = ProjectionExpression(typeof (TValue), table, projector, AggregationType.Sum,
+                m.MakeGenericMethod(new[] {typeof (T), typeof (TValue)}));
             var res = provider.Execute(row) as IEnumerable<TValue>;
             if (res == null)
             {
@@ -408,9 +464,12 @@ namespace LinqToDAX.Query
         /// <typeparam name="T">table element type</typeparam>
         /// <typeparam name="TValue">return and column type</typeparam>
         /// <returns>the maximum value of the result of the projection on the table</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Method is translated"),
-        System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "table", Justification = "Method is translated"),
-        System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "projector", Justification = "Method is translated")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design",
+            "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Method is translated"),
+         System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+             MessageId = "table", Justification = "Method is translated"),
+         System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+             MessageId = "projector", Justification = "Method is translated")]
         public static TValue? Maxx<T, TValue>(this IQueryable<T> table, Expression<Func<T, TValue?>> projector)
             where TValue : struct
         {
@@ -420,8 +479,9 @@ namespace LinqToDAX.Query
                 throw new NotImplementedException("Only available in a tabular query expression");
             }
 
-            var m = (MethodInfo)MethodBase.GetCurrentMethod();
-            var row = ProjectionExpression(typeof(TValue?), table, projector, AggregationType.Max, m.MakeGenericMethod(new[] { typeof(T), typeof(TValue) }));
+            var m = (MethodInfo) MethodBase.GetCurrentMethod();
+            var row = ProjectionExpression(typeof (TValue?), table, projector, AggregationType.Max,
+                m.MakeGenericMethod(new[] {typeof (T), typeof (TValue)}));
             var res = provider.Execute(row) as IEnumerable<TValue?>;
             if (res == null)
             {
@@ -441,9 +501,12 @@ namespace LinqToDAX.Query
         /// <returns>the minimum value of the result of the projection on the table</returns>
         /// <typeparam name="T">type of the table</typeparam>
         /// <typeparam name="TValue">type of the value returned</typeparam>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "projector", Justification = "Method is translated"),
-        System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "table", Justification = "Method is translated")]
-        public static TValue? Minx<T, TValue>(this IQueryable<T> table, Expression<Func<T, TValue>> projector) where TValue : struct
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+            MessageId = "projector", Justification = "Method is translated"),
+         System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+             MessageId = "table", Justification = "Method is translated")]
+        public static TValue? Minx<T, TValue>(this IQueryable<T> table, Expression<Func<T, TValue>> projector)
+            where TValue : struct
         {
             var provider = table.Provider as TabularQueryProvider;
             if (provider == null)
@@ -451,8 +514,9 @@ namespace LinqToDAX.Query
                 throw new NotImplementedException("Only available in a tabular query expression");
             }
 
-            var m = (MethodInfo)MethodBase.GetCurrentMethod();
-            var row = ProjectionExpression(typeof(TValue), table, projector, AggregationType.Min, m.MakeGenericMethod(new[] { typeof(T), typeof(TValue) }));
+            var m = (MethodInfo) MethodBase.GetCurrentMethod();
+            var row = ProjectionExpression(typeof (TValue), table, projector, AggregationType.Min,
+                m.MakeGenericMethod(new[] {typeof (T), typeof (TValue)}));
             var res = provider.Execute(row) as IEnumerable<TValue>;
             if (res == null)
             {
@@ -472,9 +536,12 @@ namespace LinqToDAX.Query
         /// <typeparam name="T">Table element type</typeparam>
         /// <typeparam name="TValue">column and return type</typeparam>
         /// <returns>the minimum value of the result of the projection on the table</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Method is translated"),
-        System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "projector", Justification = "Method is translated"),
-        System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "table", Justification = "Method is translated")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design",
+            "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Method is translated"),
+         System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+             MessageId = "projector", Justification = "Method is translated"),
+         System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+             MessageId = "table", Justification = "Method is translated")]
         public static TValue? Minx<T, TValue>(this IQueryable<T> table, Expression<Func<T, TValue?>> projector)
             where TValue : struct
         {
@@ -484,8 +551,9 @@ namespace LinqToDAX.Query
                 throw new NotImplementedException("Only available in a tabular query expression");
             }
 
-            var m = (MethodInfo)MethodBase.GetCurrentMethod();
-            var row = ProjectionExpression(typeof(TValue?), table, projector, AggregationType.Min, m.MakeGenericMethod(new[] { typeof(T), typeof(TValue) }));
+            var m = (MethodInfo) MethodBase.GetCurrentMethod();
+            var row = ProjectionExpression(typeof (TValue?), table, projector, AggregationType.Min,
+                m.MakeGenericMethod(new[] {typeof (T), typeof (TValue)}));
             var res = provider.Execute(row) as IEnumerable<TValue?>;
             if (res == null)
             {
@@ -505,8 +573,10 @@ namespace LinqToDAX.Query
         /// <typeparam name="T">query element type</typeparam>
         /// <typeparam name="TValue">column and return type</typeparam> 
         /// <returns>ranking of a number </returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "projector", Justification = "Method is translated"),
-        System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "table", Justification = "Method is translated")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+            MessageId = "projector", Justification = "Method is translated"),
+         System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+             MessageId = "table", Justification = "Method is translated")]
         public static long? Rankx<T, TValue>(this IQueryable<T> table, Expression<Func<T, TValue>> projector)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
@@ -524,8 +594,10 @@ namespace LinqToDAX.Query
         /// <typeparam name="T">table element type</typeparam>
         /// <typeparam name="TValue">column type</typeparam>
         /// <returns>ranking of a number </returns> 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "projector", Justification = "Method is translated"),
-        System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "table", Justification = "Method is translated")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+            MessageId = "projector", Justification = "Method is translated"),
+         System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+             MessageId = "table", Justification = "Method is translated")]
         public static long? ReverseRankx<T, TValue>(this IQueryable<T> table, Expression<Func<T, TValue>> projector)
             where TValue : struct
         {
@@ -540,9 +612,12 @@ namespace LinqToDAX.Query
         /// <param name="table">table query</param>
         /// <param name="projector">projection to a column</param>
         /// <returns>average value of the column in the query</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "projector", Justification = "Method is translated"),
-        System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "table", Justification = "Method is translated")]
-        public static TValue? Averagex<T, TValue>(this IQueryable<T> table, Expression<Func<T, TValue>> projector) where TValue : struct 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+            MessageId = "projector", Justification = "Method is translated"),
+         System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+             MessageId = "table", Justification = "Method is translated")]
+        public static TValue? Averagex<T, TValue>(this IQueryable<T> table, Expression<Func<T, TValue>> projector)
+            where TValue : struct
         {
             var provider = table.Provider as TabularQueryProvider;
             if (provider == null)
@@ -550,8 +625,9 @@ namespace LinqToDAX.Query
                 throw new NotImplementedException("Only available in a tabular query expression");
             }
 
-            var m = (MethodInfo)MethodBase.GetCurrentMethod();
-            var row = ProjectionExpression(typeof(TValue), table, projector, AggregationType.Avg, m.MakeGenericMethod(new[] { typeof(T), typeof(TValue) }));
+            var m = (MethodInfo) MethodBase.GetCurrentMethod();
+            var row = ProjectionExpression(typeof (TValue), table, projector, AggregationType.Avg,
+                m.MakeGenericMethod(new[] {typeof (T), typeof (TValue)}));
             var res = provider.Execute(row) as IEnumerable<TValue?>;
             if (res == null)
             {
@@ -569,8 +645,10 @@ namespace LinqToDAX.Query
         /// <param name="table">Tabular table or table expression</param>
         /// <param name="projector">function to select the value to count, must be column reference</param>
         /// <returns>count of values</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "projector", Justification = "Method is translated"),
-        System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "table", Justification = "Method is translated")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+            MessageId = "projector", Justification = "Method is translated"),
+         System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
+             MessageId = "table", Justification = "Method is translated")]
         public static long? Countx<T, TValue>(this IQueryable<T> table, Expression<Func<T, TValue>> projector)
         {
             var provider = table.Provider as TabularQueryProvider;
@@ -579,8 +657,9 @@ namespace LinqToDAX.Query
                 throw new NotImplementedException("Only available in a tabular query expression");
             }
 
-            var m = (MethodInfo)MethodBase.GetCurrentMethod();
-            var row = ProjectionExpression(typeof(long?), table, projector, AggregationType.Count, m.MakeGenericMethod(new[] { typeof(T), typeof(TValue) }));
+            var m = (MethodInfo) MethodBase.GetCurrentMethod();
+            var row = ProjectionExpression(typeof (long?), table, projector, AggregationType.Count,
+                m.MakeGenericMethod(new[] {typeof (T), typeof (TValue)}));
             var res = provider.Execute(row) as IEnumerable<long?>;
             if (res == null)
             {
@@ -606,10 +685,11 @@ namespace LinqToDAX.Query
 
             var binder = new TabularQueryBinder();
             var e = TabularEvaluator.PartialEval(table.Expression);
-            var t = (ProjectionExpression)binder.Bind(e);
+            var t = (ProjectionExpression) binder.Bind(e);
             string tableName = ColumnExpressionFactory.FindTableName(table.Expression);
-            var type = typeof(long?);
-            var aggregation = new XAggregationExpression(AggregationType.CountRows, t, null, "[" + "Count" + "]", tableName, type);
+            var type = typeof (long?);
+            var aggregation = new XAggregationExpression(AggregationType.CountRows, t, null, "[" + "Count" + "]",
+                tableName, type);
             var measure = new MeasureDeclaration("Count", "Count", aggregation);
             var row = new ProjectionExpression(
                 new RowExpression(type, measure), measure.Expression);
@@ -622,11 +702,34 @@ namespace LinqToDAX.Query
             return res.FirstOrDefault();
         }
 
-        private static ProjectionExpression ProjectionExpression<T, TValue>(Type returnType, IQueryable<T> table, Expression<Func<T, TValue>> projector, AggregationType aggregationType, MethodInfo method)
+        public static async Task<List<TResult>> ToListAsync<TResult>(this IQueryable<TResult> query, CancellationToken token = default(CancellationToken))
+        {
+            var provider = query.Provider as TabularQueryProvider;
+            if (token.IsCancellationRequested)
+            {
+                token.ThrowIfCancellationRequested();   
+            }
+
+            if (provider != null)
+            {
+                if (token.IsCancellationRequested)
+                {
+                    token.ThrowIfCancellationRequested();
+                }
+
+                var ie = await provider.ExecuteAsync<IEnumerable<TResult>>(query.Expression, token);
+                return ie.ToList();
+            }
+
+            return await Task.Factory.StartNew(() => query.ToList(), token);
+        }
+
+        private static ProjectionExpression ProjectionExpression<T, TValue>(Type returnType, IQueryable<T> table,
+            Expression<Func<T, TValue>> projector, AggregationType aggregationType, MethodInfo method)
         {
             var binder = new TabularQueryBinder();
             var e = TabularEvaluator.PartialEval(table.Expression);
-            var methodCall = Expression.Call(null, method, new[] { e, projector });
+            var methodCall = Expression.Call(null, method, new[] {e, projector});
             var type = returnType;
             var aggregation = new ColumnExpressionFactory(binder).CreateXAggregation(aggregationType, methodCall);
             var measure = new MeasureDeclaration("Result", "Result", aggregation);
