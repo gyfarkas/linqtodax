@@ -547,7 +547,6 @@ namespace LinqToDAX.Query
             MessageId = "projector", Justification = "Method is translated"),
          System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
              MessageId = "table", Justification = "Method is translated")]
-        [NonNullableAggregation]
         public static TValue Sumx<T, TValue>(this IQueryable<T> table, Expression<Func<T, TValue>> projector)
         {
             var provider = table.Provider as TabularQueryProvider;
@@ -604,9 +603,7 @@ namespace LinqToDAX.Query
             }
 
             var m = 
-                typeof(TabularQueryExtensions)
-                .GetMethods(BindingFlags.Static | BindingFlags.Public).Where(x => x.Name == "Sumx")
-                .First(x => x.CustomAttributes.Any(a => a.AttributeType == typeof(NonNullableAggregationAttribute)));
+                typeof(TabularQueryExtensions).GetMethods(BindingFlags.Static | BindingFlags.Public).First(x => x.Name == "Sumx");
             var row = ProjectionExpression(typeof(TValue), table, projector, AggregationType.Sum, m.MakeGenericMethod(new[] { typeof(T), typeof(TValue) }));
             if (token.IsCancellationRequested)
             {
@@ -636,7 +633,6 @@ namespace LinqToDAX.Query
             MessageId = "projector", Justification = "Method is translated"),
          System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
              MessageId = "table", Justification = "Method is translated")]
-        [NonNullableAggregationAttribute]
         public static TValue Maxx<T, TValue>(this IQueryable<T> table, Expression<Func<T, TValue>> projector)
        ////     where TValue : struct
         {
@@ -694,8 +690,8 @@ namespace LinqToDAX.Query
 
             var method =
                 typeof(TabularQueryExtensions)
-                .GetMethods(BindingFlags.Static | BindingFlags.Public).Where(x => x.Name == "Maxx")
-                .First(x => x.CustomAttributes.Any(a => a.AttributeType == typeof(NonNullableAggregationAttribute)));
+                    .GetMethods(BindingFlags.Static | BindingFlags.Public)
+                    .First(x => x.Name == "Maxx");
             var row = ProjectionExpression(typeof(TValue), table, projector, AggregationType.Max, method.MakeGenericMethod(new[] { typeof(T), typeof(TValue) }));
             if (token.IsCancellationRequested)
             {
@@ -725,9 +721,7 @@ namespace LinqToDAX.Query
             MessageId = "projector", Justification = "Method is translated"),
          System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
              MessageId = "table", Justification = "Method is translated")]
-        [NonNullableAggregation]
         public static TValue Minx<T, TValue>(this IQueryable<T> table, Expression<Func<T, TValue>> projector)
-          ////  where TValue : struct
         {
             var provider = table.Provider as TabularQueryProvider;
             if (provider == null)
@@ -784,8 +778,8 @@ namespace LinqToDAX.Query
 
             var m =
                 typeof(TabularQueryExtensions)
-                .GetMethods(BindingFlags.Static | BindingFlags.Public).Where(x => x.Name == "Minx")
-                .First(x => x.CustomAttributes.Any(a => a.AttributeType == typeof(NonNullableAggregationAttribute)));
+                .GetMethods(BindingFlags.Static | BindingFlags.Public)
+                .First(x => x.Name == "Minx");
             var row = ProjectionExpression(typeof(TValue), table, projector, AggregationType.Min, m.MakeGenericMethod(new[] { typeof(T), typeof(TValue) }));
             if (token.IsCancellationRequested)
             {
@@ -815,7 +809,6 @@ namespace LinqToDAX.Query
             MessageId = "projector", Justification = "Method is translated"),
          System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
              MessageId = "table", Justification = "Method is translated")]
-        [NonNullableAggregation]
         public static long? Rankx<T, TValue>(this IQueryable<T> table, Expression<Func<T, TValue>> projector)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
@@ -837,7 +830,6 @@ namespace LinqToDAX.Query
             MessageId = "projector", Justification = "Method is translated"),
          System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
              MessageId = "table", Justification = "Method is translated")]
-        [NonNullableAggregation]
         public static long? ReverseRankx<T, TValue>(this IQueryable<T> table, Expression<Func<T, TValue>> projector)
           ////  where TValue : struct
         {
@@ -856,7 +848,6 @@ namespace LinqToDAX.Query
             MessageId = "projector", Justification = "Method is translated"),
          System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
              MessageId = "table", Justification = "Method is translated")]
-        [NonNullableAggregation]
         public static TValue Averagex<T, TValue>(this IQueryable<T> table, Expression<Func<T, TValue>> projector)
         {
             var provider = table.Provider as TabularQueryProvider;
@@ -911,8 +902,8 @@ namespace LinqToDAX.Query
 
             var m = 
                 typeof(TabularQueryExtensions)
-                .GetMethods(BindingFlags.Static | BindingFlags.Public).Where(x => x.Name == "Averagex")
-                .First(x => x.CustomAttributes.Any(a => a.AttributeType == typeof(NonNullableAggregationAttribute)));
+                    .GetMethods(BindingFlags.Static | BindingFlags.Public)
+                    .First(x => x.Name == "Averagex");
             var row = ProjectionExpression(typeof(TValue), table, projector, AggregationType.Avg, m.MakeGenericMethod(new[] { typeof(T), typeof(TValue) }));
             if (token.IsCancellationRequested)
             {
@@ -940,7 +931,6 @@ namespace LinqToDAX.Query
             MessageId = "projector", Justification = "Method is translated"),
          System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
              MessageId = "table", Justification = "Method is translated")]
-        [NonNullableAggregation]
         public static long? Countx<T, TValue>(this IQueryable<T> table, Expression<Func<T, TValue>> projector)
         {
             var provider = table.Provider as TabularQueryProvider;
@@ -995,8 +985,7 @@ namespace LinqToDAX.Query
 
             var m = 
                 typeof(TabularQueryExtensions)
-                .GetMethods(BindingFlags.Static | BindingFlags.Public).Where(x => x.Name == "Countx")
-                .First(x => x.CustomAttributes.Any(a => a.AttributeType == typeof(NonNullableAggregationAttribute)));
+                    .GetMethods(BindingFlags.Static | BindingFlags.Public).First(x => x.Name == "Countx");
             var row = ProjectionExpression(typeof(long?), table, projector, AggregationType.Count, m.MakeGenericMethod(new[] { typeof(T), typeof(TValue) }));
             if (token.IsCancellationRequested)
             {
@@ -1152,21 +1141,5 @@ namespace LinqToDAX.Query
                 new RowExpression(type, measure), measure.Expression);
             return row;
         }
-    }
-
-    /// <summary>
-    /// signals aggregations that do not accept <see cref="Nullable"/> parameters 
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Method)]
-    internal class NonNullableAggregationAttribute : Attribute
-    {
-    }
-
-    /// <summary>
-    /// signals aggregations that do accept <see cref="Nullable"/> parameters
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Method)]
-    internal class NullableAggregationAttribute : Attribute
-    {
     }
 }
