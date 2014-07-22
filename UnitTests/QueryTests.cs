@@ -188,7 +188,6 @@ namespace UnitTests
             var result = q2.CalculateTable(q1).ToList().Select(r => Math.Round(r.Sales, 0));
 
             result.Should().Contain(2722);
-
         }
 
         [Test]

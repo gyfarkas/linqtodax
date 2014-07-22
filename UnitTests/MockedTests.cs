@@ -1,15 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using AdventureWorks;
 using FluentAssertions;
 using LinqToDAX.Query;
 using LinqToDAX.Query.Fakes;
 using Microsoft.QualityTools.Testing.Fakes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NUnit.Framework;
-using System;
 using System.Linq;
-using TabularEntities;
 using AdventureWorks.Fakes;
 
 namespace UnitTests
@@ -35,6 +31,7 @@ namespace UnitTests
             using (ShimsContext.Create())
             {
                 ShimTabularQueryExtensions.CalculateTableOf2IQueryableOfM0IQueryableOfM1<string,string>( (x,y) => x );
+                ShimTabularQueryExtensions.AveragexOf2IQueryableOfM0ExpressionOfFuncOfM0M1<long,long>((x,f) => 1);
                 ShimTabularQueryExtensions.GenerateOf3IQueryableOfM1IQueryableOfM2ExpressionOfFuncOfM1M2M0<Other,string,Something>((x,y,z) => new EnumerableQuery<Other>(new Other[]
                 {
                     new Other { Sum = 10, List = new List<string> { "a", "b" ,"c"}}

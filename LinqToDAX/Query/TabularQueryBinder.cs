@@ -133,7 +133,7 @@ namespace LinqToDAX.Query
                     case "OrderByDescending":
                     case "ThenBy":
                     case "ThenByDescending":
-                        return BindOrderBy(node.Type, node.Arguments[0],(LambdaExpression) TabularExpressionHelper.StripQuotes(node.Arguments[1]));
+                        return BindOrderBy(node.Type, node.Arguments[0], (LambdaExpression)TabularExpressionHelper.StripQuotes(node.Arguments[1]));
                     default:
                         throw new NotImplementedException(string.Format("no method to deal with : {0}", node.Method.Name));
                 }
@@ -149,7 +149,7 @@ namespace LinqToDAX.Query
 
         private Expression BindOrderBy(Type type, Expression expression, LambdaExpression lambdaExpression)
         {
-                                 throw new NotImplementedException("order by");
+            throw new NotImplementedException("order by");
         }
 
         /// <summary>

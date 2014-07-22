@@ -146,17 +146,6 @@ namespace LinqToDAX.Query.DAXExpression
             var projector = table.Projector as NewExpression;
             var column = (ColumnExpression)FindColumnExpression(projector, member);
             var type = column.Type;
-            if (column.Type.IsValueType && !column.Type.IsGenericType)
-            {
-                try
-                {
-                    type = typeof(Nullable<>).MakeGenericType(new[] { column.Type });
-                }
-                catch (ArgumentException)
-                {
-                    // nothing to do here 
-                }
-            }
 
             if (aggregationType == AggregationType.Count || aggregationType == AggregationType.Rank || aggregationType == AggregationType.ReverseRank)
             {

@@ -88,7 +88,12 @@ namespace LinqToDAX.Query.DAXExpression
         {
             Func<Expression, bool> isFilterCondition = expression =>
             {
-              
+                var node = expression as UnaryExpression;
+                if (node != null)
+                {
+                    expression = node.Operand;
+                }
+            
                 switch ((DaxExpressionType)expression.NodeType)
                 {
                     case DaxExpressionType.Column:
@@ -141,7 +146,6 @@ namespace LinqToDAX.Query.DAXExpression
             _calculateTableConditions.Add(node);
             return node;
         }
-
 
         /// <summary>
         /// Examine Binary expressions
