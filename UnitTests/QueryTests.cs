@@ -443,19 +443,25 @@ namespace UnitTests
             s.Should().NotBe(null);
         }
 
-        [Test]
-        public void SumxStandaloneAsync()
+        public class  BaseForAverage 
         {
-            var s = (from x in _db.InternetSalesSet
+            public string x { get; set; }
+            public decimal v { get; set; }
+        }
+
+        [Test]
+        public async Task SumxStandaloneAsync()
+        {
+            var s = await (from x in _db.InternetSalesSet
                      where x.RelatedCustomer.RelatedGeography.City == "London"
                      select
-                         new
+                         new BaseForAverage
                          {
-                             x.RelatedCustomer.CustomerId,
+                             x = x.RelatedCustomer.CustomerId,
                              v = x.SalesAmount.Sum()
                          }).Take(10).SumxAsync(x => x.v);
-            s.Wait();
-            s.Result.Should().NotBe(null);
+            
+            s.Should().NotBe(null);
         }
 
         [Test]
@@ -464,9 +470,9 @@ namespace UnitTests
             var s = (from x in _db.InternetSalesSet
                 where x.RelatedCustomer.RelatedGeography.City == "London"
                 select
-                    new
+                    new BaseForAverage
                     {
-                        x.RelatedCustomer.CustomerId,
+                        x = x.RelatedCustomer.CustomerId,
                         v = x.SalesAmount.Sum()
                     }).Take(10).Averagex(x => x.v);
             s.Should().NotBe(null);

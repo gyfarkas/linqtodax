@@ -142,8 +142,20 @@ namespace LinqToDAX.Query.DAXExpression
 
             MemberInfo member = init.Member;
             string tableName = FindTableName(node);
-           
-            var projector = table.Projector as NewExpression;
+            Expression projector;
+            switch (table.Projector.NodeType)
+            {
+                case ExpressionType.New:
+                    projector = table.Projector as NewExpression;
+                    break;
+                case ExpressionType.MemberInit:
+                    projector = table.Projector as MemberInitExpression;
+                    break;
+                default:
+                    projector = table.Projector;
+                    break;
+            }
+            
             var column = (ColumnExpression)FindColumnExpression(projector, member);
             var type = column.Type;
 
