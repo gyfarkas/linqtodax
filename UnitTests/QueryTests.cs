@@ -425,6 +425,7 @@ namespace UnitTests
                             }).Take(10).Sumx(x => x.v)
                 };
             var result = q.ToList();
+
             result.Should().NotBeNull();
         }
 
@@ -438,8 +439,9 @@ namespace UnitTests
                     new
                     {
                         x.RelatedCustomer.CustomerId,
+                        v1 = x.InternetTotalSales(),
                         v = x.SalesAmount.Sum()
-                    }).Take(10).Sumx(x => x.v);
+                    }).Take(10).Sumx(x => x.v1 + x.v);
             s.Should().NotBe(null);
         }
 
@@ -810,7 +812,7 @@ namespace UnitTests
                 {
                     Name = sales.RelatedCustomer.LastName,
                     Customers = (from customer in _db.CustomerSet
-                        where customer.LastName == n
+                                 where customer.LastName == n
                         select new
                         {
                             Name = customer.FirstName,

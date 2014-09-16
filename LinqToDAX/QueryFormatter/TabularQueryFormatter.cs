@@ -69,6 +69,7 @@ namespace LinqToDAX.QueryFormatter
         /// <returns>the expression</returns>
         protected override Expression VisitSubQuery(SubQueryProjection projectionExpression)
         {
+            Visit(projectionExpression.Projection);
             return projectionExpression;
         }
 
@@ -175,7 +176,7 @@ namespace LinqToDAX.QueryFormatter
             if (summarizeExpression.AllColumns != null && summarizeExpression.AllColumns.Any())
             {
                 this.Builder.Append("\tSUMMARIZE(\n");
-                this.Visit(summarizeExpression.MainTable);
+                this.Visit(TableFactory.GetTableExpression(summarizeExpression.MainTable));
 
                 if (summarizeExpression.Columns.Any())
                 {
@@ -430,6 +431,12 @@ namespace LinqToDAX.QueryFormatter
                     break;
                 case ExpressionType.OrElse:
                     this.Builder.Append(" || ");
+                    break;
+                case ExpressionType.Multiply:
+                    this.Builder.Append(" * ");
+                    break;
+                case ExpressionType.Add:
+                    this.Builder.Append(" + ");
                     break;
                 default:
                     throw new TabularException("this query is not supported yet, try to rephrase your query");

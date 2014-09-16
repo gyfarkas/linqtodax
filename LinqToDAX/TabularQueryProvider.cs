@@ -52,7 +52,7 @@ namespace LinqToDAX
         /// </summary>
         /// <param name="expression">expression to be translated</param>
         /// <returns>query string</returns>
-        public static string GetQueryText(Expression expression)
+        public string GetQueryText(Expression expression)
         {
             return Translate(expression).CommandText;
         }
@@ -152,7 +152,7 @@ namespace LinqToDAX
             return (TResult)res;
         }
 
-        private static TranslateResult Translate(Expression expression)
+        private TranslateResult Translate(Expression expression)
         {
             var projection = expression as ProjectionExpression;
             var subQuery = expression as SubQueryProjection;
@@ -161,15 +161,17 @@ namespace LinqToDAX
             {
                 projection = subQuery.Projection;
             }
+            expression = TabularEvaluator.PartialEval(expression);
+            var boundExpression = new TabularQueryBinder(this).Bind(expression);
 
             if (projection == null && subQuery == null)
             {
-                expression = TabularEvaluator.PartialEval(expression);
-                projection = (ProjectionExpression)new TabularQueryBinder().Bind(expression);
+               return Translate(boundExpression);
             }
 
             if (projection == null)
             {
+                
                 throw new TabularException("Could not translate");
             }
 
@@ -203,7 +205,7 @@ namespace LinqToDAX
 
             OleDbDataReader reader = cmd.ExecuteReader();
 
-            Type elementType = TypeSystem.GetElementType(result.Projector.Body.Type);
+            Type elementType = result.Projector.Body.Type; //TypeSystem.GetElementType(result.Projector.Body.Type);
 
             return Activator.CreateInstance(
                 typeof(ProjectionReader<>).MakeGenericType(elementType),

@@ -510,9 +510,24 @@ namespace LinqToDAX.Query.DAXExpression
             AggregationType = aggregationType;
         }
 
+        internal XAggregationExpression(
+            AggregationType aggregationType,
+            Expression source,
+            Expression complex,
+            string name,
+            string table,
+            Type type)
+            : base((ExpressionType)DaxExpressionType.XAggregation, type, name, name, table)
+        {
+            Source = source;
+            ComplexExpression = complex;
+            AggregationType = aggregationType;
+        }
+
         internal AggregationType AggregationType { get; private set; }
         internal Expression Source { get; private set; }
         internal ColumnExpression Column { get; private set; }
+        internal Expression ComplexExpression { get; set; }
     }
 
     internal class ColumnDeclaration
@@ -614,15 +629,17 @@ namespace LinqToDAX.Query.DAXExpression
 
     internal class FilterExpression : DaxExpression
     {
-        internal FilterExpression(Type resultType, Expression source, Expression where)
+        internal FilterExpression(Type resultType, Expression source, Expression where, IEnumerable<ColumnDeclaration> columns )
             : base((ExpressionType) DaxExpressionType.Filter, resultType)
         {
             MainTable = source;
             Filter = where;
+            Columns = columns.ToList().AsReadOnly();
         }
 
         internal Expression MainTable { get; private set; }
         internal Expression Filter { get; private set; }
+        internal ReadOnlyCollection<ColumnDeclaration> Columns { get; set; }
     }
 
     internal class TopnExpression : DaxExpression

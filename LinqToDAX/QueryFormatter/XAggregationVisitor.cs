@@ -78,6 +78,7 @@ namespace LinqToDAX.QueryFormatter
             }
 
             Visit(aggregationExpression.Source);
+
             if (aggregationExpression.Column != null)
             {
                 Builder.Append(",\n");
@@ -85,7 +86,7 @@ namespace LinqToDAX.QueryFormatter
                 {
                     Builder.Append("-");
                 }
-           
+
                 if (aggregationExpression.Column is MeasureExpression)
                 {
                     Builder.Append(aggregationExpression.Column.Name);
@@ -94,6 +95,11 @@ namespace LinqToDAX.QueryFormatter
                 {
                     Builder.Append(aggregationExpression.Column.DbName);
                 }
+            }
+            else if (aggregationExpression.ComplexExpression != null)
+            {
+                Builder.Append(",\n");
+                Visit(aggregationExpression.ComplexExpression);
             }
 
             Builder.Append(")");

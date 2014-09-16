@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+﻿// -----------------------------------------------c---------------------------------------------------------------------
 // <copyright file="Replacer.cs" company="Dealogic">
 //   see LICENCE.md
 // </copyright>
@@ -26,6 +26,21 @@ namespace LinqToDAX.Query
         /// <returns>transformed expression</returns>
         public override Expression Visit(Expression node)
         {
+            switch (node.NodeType)
+            {
+                case  ExpressionType.Parameter:
+                    var p = node as ParameterExpression;
+                    var p2 = _searchFor as ParameterExpression;
+                    if (p2 != null)
+                    {
+                        if (p.Name == p2.Name && p.Type == p2.Type)
+                        {
+                            return this._replaceWith;
+                        }
+                    }
+                    break;
+            }
+            
             if (node == this._searchFor)
             {
                 return this._replaceWith;

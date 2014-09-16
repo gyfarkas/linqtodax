@@ -189,7 +189,7 @@ namespace LinqToDAX.Query
             /// <returns>result object</returns>
             public override IEnumerable<E> ExecuteSubQuery<E>(LambdaExpression query)
             {
-                var body = ((SubQueryProjection)query.Body).Projection as ProjectionExpression;
+                var body = ((SubQueryProjection)query.Body).Projection;
                 var source = (DaxExpression)new Replacer()
                     .Replace(body.Source, query.Parameters[0], Expression.Constant(this));
                 
@@ -217,7 +217,7 @@ namespace LinqToDAX.Query
 
             private static bool IsDaxExpression(Expression exp)
             {
-                return ((int)exp.NodeType) > 1000;
+                return ((int)exp.NodeType) >= 1000;
             }
         }
     }

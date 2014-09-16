@@ -8,6 +8,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System.Linq;
+using System.Text;
 
 namespace LinqToDAX.Query.DAXExpression
 {
@@ -93,7 +94,7 @@ namespace LinqToDAX.Query.DAXExpression
                 {
                     expression = node.Operand;
                 }
-            
+
                 switch ((DaxExpressionType)expression.NodeType)
                 {
                     case DaxExpressionType.Column:
@@ -120,7 +121,7 @@ namespace LinqToDAX.Query.DAXExpression
 
                     if (leftColumn != null && rightColumn != null)
                     {
-                        return leftColumn.DbName == rightColumn.DbName;
+                        return leftColumn.DbName == rightColumn.DbName && leftColumn.TableName == rightColumn.TableName;
                     }
                 }
 
@@ -147,6 +148,18 @@ namespace LinqToDAX.Query.DAXExpression
             return node;
         }
 
+        protected override Expression VisitConstant(ConstantExpression constant)
+        {
+            if (constant.Type == typeof(bool))
+            {
+                _filterConditions.Add(constant);
+                return constant;
+            }
+
+            return base.VisitConstant(constant);
+        }
+
+    
         /// <summary>
         /// Examine Binary expressions
         /// </summary>
@@ -160,13 +173,19 @@ namespace LinqToDAX.Query.DAXExpression
                     Visit(node.Left);
                     Visit(node.Right);
                     break;
+                case ExpressionType.NotEqual:
+                    _filterConditions.Add(node);
+                    return node;
                 case ExpressionType.Equal:
                 case ExpressionType.LessThan:
                 case ExpressionType.GreaterThan:
-                case ExpressionType.NotEqual:
                 case ExpressionType.GreaterThanOrEqual:
                 case ExpressionType.LessThanOrEqual:
-                    if (_isFilterCondition(node.Left) || _isFilterCondition(node.Right))
+                    var  bothColumns = node.Left is ColumnExpression && node.Right is ColumnExpression;
+
+                    if (_isFilterCondition(node.Left) 
+                        || _isFilterCondition(node.Right) 
+                        || (bothColumns && !_hasSameColumn(node.Left, node.Right)))
                     {
                         _filterConditions.Add(node);
                         return node;

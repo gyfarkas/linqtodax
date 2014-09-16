@@ -153,13 +153,14 @@ namespace LinqToDAX.Query
                     Visit(arg);
                 }
             }
-
+           
             return base.VisitMethodCall(node);
         }
 
-        private static Expression Evaluate(Expression e)
+       private static Expression Evaluate(Expression e)
         {
-            if (e.NodeType == ExpressionType.Constant || (DaxExpressionType)e.NodeType == DaxExpressionType.Projection)
+            if (e.NodeType == ExpressionType.Constant 
+                || (DaxExpressionType)e.NodeType == DaxExpressionType.Projection )
             {
                 return e;
             }

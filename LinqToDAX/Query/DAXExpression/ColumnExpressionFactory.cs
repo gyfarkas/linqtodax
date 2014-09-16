@@ -69,11 +69,27 @@ namespace LinqToDAX.Query.DAXExpression
                 return expression;
             }
 
+            if (expression.Expression.NodeType == ExpressionType.MemberAccess)
+            {
+                var obj = _binder.Visit(expression.Expression) as NewExpression;
+                if (obj != null)
+                {
+                    var c = FindColumnExpression(obj, expression.Member);
+                    //var memberIndex = obj.Members.IndexOf(x => x.Name == expression.Member.Name);
+                    
+                    //var member = (ColumnExpression)obj.Arguments[memberIndex];
+
+                    return c;
+                }
+            }
+
             var mapping =
                 expression.Member.GetCustomAttribute(typeof(TabularMappingAttribute)) as TabularMappingAttribute;
             if (mapping == null)
             {
-                throw new TabularException("Invalid lookup arguments");
+                var e = _binder.Visit(expression.Expression);
+                return Expression.MakeMemberAccess(e, expression.Member);
+               // throw new TabularException("Invalid lookup arguments");
             }
            
             string columnName = expression.Member.Name;
@@ -123,6 +139,23 @@ namespace LinqToDAX.Query.DAXExpression
             return new MeasureExpression(node.Method.ReturnType, (ExpressionType)DaxExpressionType.Measure,  name, dbname, name, table, filter);
         }
 
+        internal Expression CreateXAggregationFromLambda(Type t, AggregationType aggregationType, Expression expression, Expression table)
+        {
+            _measureCounter++;
+            var tableName = FindTableName(table);
+            switch (expression.NodeType)
+            {
+                case ExpressionType.Add:
+                case ExpressionType.Multiply:
+                    
+                    return new XAggregationExpression(aggregationType, table, expression, "[" + aggregationType + _measureCounter + "]", tableName, t);
+                    
+                default:
+                    throw new TabularException("Aggregation argument should refer to a member");
+            }
+        }
+
+
         /// <summary>
         /// Creates an aggregation like SUMX
         /// </summary>
@@ -131,17 +164,24 @@ namespace LinqToDAX.Query.DAXExpression
         /// <returns>aggregation expression</returns>
         internal Expression CreateXAggregation(AggregationType aggregationType, MethodCallExpression node)
         {
-            _measureCounter++;
+            
             var table = (ProjectionExpression)_binder.Visit(node.Arguments[0]);
             var lambda = (LambdaExpression)TabularExpressionHelper.StripQuotes(node.Arguments[1]);
             var init = lambda.Body as MemberExpression;
+            string tableName = FindTableName(node);
             if (init == null)
             {
-                throw new TabularException("Aggregation argument should refer to a member");
+                var parameters = new Dictionary<ParameterExpression, Expression>();
+                parameters.Add(lambda.Parameters[0], table.Projector);
+              
+                var e = lambda.Body as BinaryExpression;
+                var t = e.Type;
+                var ex = _binder.BindRelative(e, parameters);
+                return CreateXAggregationFromLambda(t, aggregationType, ex, table);
             }
-
+            _measureCounter++;
             MemberInfo member = init.Member;
-            string tableName = FindTableName(node);
+            
             Expression projector;
             switch (table.Projector.NodeType)
             {
@@ -158,7 +198,6 @@ namespace LinqToDAX.Query.DAXExpression
             
             var column = (ColumnExpression)FindColumnExpression(projector, member);
             var type = column.Type;
-
             if (aggregationType == AggregationType.Count || aggregationType == AggregationType.Rank || aggregationType == AggregationType.ReverseRank)
             {
                 type = typeof(long?);
@@ -179,6 +218,16 @@ namespace LinqToDAX.Query.DAXExpression
 
         internal static string FindTableName(Expression node)
         {
+            
+            if ((DaxExpressionType)node.NodeType == DaxExpressionType.Table)
+            {
+                var table = node as TableExpression;
+                if (table != null)
+                {
+                    return table.Name;
+                }
+            }
+
             var tableName = string.Empty;
             var finder = new Finder<ConstantExpression>();
             finder.Visit(node);
@@ -192,6 +241,7 @@ namespace LinqToDAX.Query.DAXExpression
                     tableName = att.TableName;
                 }
             }
+
             return tableName;
         }
 

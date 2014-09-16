@@ -7,6 +7,9 @@
 //   that is used to get the data from the database.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
+
+
+
 namespace LinqToDAX.Query
 {
     using System;
@@ -22,7 +25,7 @@ namespace LinqToDAX.Query
         /// </summary>
         /// <param name="node">binary expression</param>
         /// <returns>converted expression</returns>
-        
+
         protected override Expression VisitBinary(BinaryExpression node)
         {
             if (node.NodeType == ExpressionType.Equal)
@@ -43,6 +46,11 @@ namespace LinqToDAX.Query
     /// 
     internal class ProjectionBuilder : DaxExpressionVisitor
     {
+        /// <summary>
+        /// index of the row 
+        /// </summary>
+        private static int _rowIndex;
+
         /// <summary>
         /// The reflected method to read from the DataReader
         /// </summary>
@@ -68,7 +76,8 @@ namespace LinqToDAX.Query
                 _getValue = typeof(ProjectionRow).GetMethod("GetValue");
                 _executeSubQuery = typeof(ProjectionRow).GetMethod("ExecuteSubQuery");
             }
-            _row = Expression.Parameter(typeof(ProjectionRow), "row");
+            _row = Expression.Parameter(typeof(ProjectionRow), "row" + _rowIndex);
+            
         }
 
         /// <summary>
@@ -79,6 +88,7 @@ namespace LinqToDAX.Query
         internal LambdaExpression Build(Expression exp)
         {
             Expression body = Visit(exp);
+            _rowIndex++;
             return Expression.Lambda(body, _row);
         }
 
@@ -103,14 +113,21 @@ namespace LinqToDAX.Query
             var projection = new ProjectionExpression(exp, projectionExpression.Projection.Projector);
             var q = new SubQueryProjection(projectionExpression.Type, projection);
             LambdaExpression subQuery = Expression.Lambda(q, _row);
+            MethodInfo mi;
             if (projectionExpression.Type.IsGenericType)
             {
-                Type elementType = TypeSystem.GetElementType(subQuery.Body.Type);
-                MethodInfo mi = _executeSubQuery.MakeGenericMethod(elementType);
-                return Expression.Convert(Expression.Call(_row, mi, Expression.Constant(subQuery)), projectionExpression.Type);
+                Type elementType = TypeSystem.GetElementType(projectionExpression.Type);
+
+                mi = _executeSubQuery.MakeGenericMethod(elementType);
+            }
+            else
+            {
+                mi = _executeSubQuery.MakeGenericMethod(subQuery.Body.Type);
             }
 
-            return base.Visit(projectionExpression);
+            return Expression.Convert(Expression.Call(_row, mi, Expression.Constant(subQuery)), projectionExpression.Type);
+
+             //MethodInfo mireturn base.Visit(projectionExpression);
         }
 
         /// <summary>

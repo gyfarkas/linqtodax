@@ -36,9 +36,10 @@ namespace LinqToDAX.Query.DAXExpression
                     @where = ((CalculateTableExpression)maintable).Filters;
                     return new CalculateTableExpression(type, main, @where);
                 case DaxExpressionType.Filter:
-                    main = Create(type, columns.Distinct(), ((FilterExpression)maintable).MainTable);
+                    var filterColumns = ((FilterExpression) maintable).Columns;
+                    main = Create(type, columns.Union(filterColumns).Distinct(), ((FilterExpression)maintable).MainTable);
                     @where = ((FilterExpression)maintable).Filter;
-                    return new FilterExpression(type, main, @where);
+                    return new FilterExpression(type, main, @where, ((FilterExpression)maintable).Columns);
             }
 
             var columnList = columns.ToList();
@@ -63,7 +64,19 @@ namespace LinqToDAX.Query.DAXExpression
                     type,
                     columnList.Where(c => !(c is MeasureDeclaration)).Distinct(),
                     maintable);
+
+                if ((DaxExpressionType)maintable.NodeType == DaxExpressionType.Summarize && ((SummarizeExpression)maintable).AllColumns.Any())
+                {
+                    return new AddColumnsExpression(type, measures.Distinct(), maintable);  
+                }
+
                 return new AddColumnsExpression(type, measures.Distinct(), summarize);  
+            }
+            var maint = maintable as SummarizeExpression;
+
+            if (maint != null && (DaxExpressionType)maintable.NodeType == DaxExpressionType.Summarize)
+            {
+                return new SummarizeExpression(type, columnList.Distinct(), maint.MainTable);
             }
 
             return new SummarizeExpression(type, columnList.Distinct(), maintable);

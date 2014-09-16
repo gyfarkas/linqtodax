@@ -93,6 +93,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="LinqOperatorTests.cs" />
     <Compile Include="MockedTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryTests.cs" />

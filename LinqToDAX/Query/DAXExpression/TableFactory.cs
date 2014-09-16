@@ -48,9 +48,29 @@ namespace LinqToDAX.Query.DAXExpression
                     return TableExpressionFromMember((MemberExpression)node);
                 case ExpressionType.Parameter:
                     return TableExpressionFromParameter((ParameterExpression)node);
+                case ExpressionType.Constant:
+                    return TableExpressionFromConstant((ConstantExpression) node);
+                case ExpressionType.MemberInit:
+                    return TableExpressionFromMemberInit((MemberInitExpression)node);
+                case ExpressionType.New:
+                    return TableExpressionFromNew((NewExpression)node);
                 default:
-                    throw new TabularException("Not yet supported");
+                    return node;
             }
+        }
+
+
+        internal static Expression TableExpressionFromConstant(ConstantExpression node)
+        {
+            var mapping = node.Type.GetCustomAttribute(typeof(TabularTableMappingAttribute)) as
+                    TabularTableMappingAttribute;
+            if (mapping != null)
+            {
+                string dbname = mapping.TableName;
+                return new TableExpression(node.Type, dbname);
+            }
+
+            throw new ArgumentException("Should have been a type representing a table");
         }
 
         /// <summary>
@@ -115,6 +135,32 @@ namespace LinqToDAX.Query.DAXExpression
             return m;
         }
 
+        internal static Expression TableExpressionFromNew(NewExpression n)
+        {
+            var mapping =
+                n.Type.GetCustomAttribute(typeof (TabularTableMappingAttribute)) as TabularTableMappingAttribute;
+            if (mapping != null)
+            {
+                string dbname = mapping.TableName;
+                return new TableExpression(n.Type, dbname);
+            }
+
+            return n;
+        }
+
+        internal static Expression TableExpressionFromMemberInit(MemberInitExpression init)
+        {
+            var mapping =
+                init.Type.GetCustomAttribute(typeof (TabularTableMappingAttribute)) as TabularTableMappingAttribute;
+            if (mapping != null)
+            {
+                string dbname = mapping.TableName;
+                return new TableExpression(init.Type, dbname);
+            }
+
+            return init;
+        }
+
         /// <summary>
         /// creates a projection expression from an <see cref="IQueryable"/> object 
         /// </summary>
@@ -130,9 +176,8 @@ namespace LinqToDAX.Query.DAXExpression
                 Type columnType = ColumnExpressionFactory.GetColumnType(mi);
                 if (typeof(ITabularData).IsAssignableFrom(columnType))
                 {
-                    Type tableType = typeof(TabularTable<>).MakeGenericType(columnType);
-                    object c = Activator.CreateInstance(tableType, table.Provider);
-                    Expression relatedTable = _binder.Visit(Expression.Constant(c));
+                    object c = Activator.CreateInstance(columnType); 
+                    Expression relatedTable = Expression.Constant(c);
                     bindings.Add(Expression.Bind(mi, relatedTable));
                 }
                 else

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace LinqToDAX.Query.DAXExpression
 {
     using System;
@@ -43,7 +45,7 @@ namespace LinqToDAX.Query.DAXExpression
 
             Expression all = GetAllExpression(node.Arguments[0], node.Method.ReturnType, selected);
             Expression filter = _binder.Visit(node.Arguments[1]);
-            return new FilterExpression(node.Method.ReturnType, all, filter);
+            return new FilterExpression(node.Method.ReturnType, all, filter, new List<ColumnDeclaration>());
         }
 
         /// <summary>

@@ -41,8 +41,8 @@ namespace LinqToDAX.Query
         {
             Expression sourceExpression = TabularEvaluator.PartialEval(source.Expression);
             Expression filterExpression = TabularEvaluator.PartialEval(filterTable.Expression);
-            var projection = (ProjectionExpression)new TabularQueryBinder().Bind(sourceExpression);
-            var filter = (ProjectionExpression)new TabularQueryBinder().Bind(filterExpression);
+            var projection = (ProjectionExpression)new TabularQueryBinder((TabularQueryProvider) source.Provider).Bind(sourceExpression);
+            var filter = (ProjectionExpression)new TabularQueryBinder((TabularQueryProvider)source.Provider).Bind(filterExpression);
             var calculateTableExpression = new CalculateTableExpression(typeof(TData), projection.Source, filter.Source);
             Type elevatedType = typeof(TabularTable<>).MakeGenericType(projection.Projector.Type);
             var resultProjectionExpression =
@@ -71,7 +71,7 @@ namespace LinqToDAX.Query
             IQueryable<TGenerator> generator,
             Expression<Func<TSource, TGenerator, TData>> selectorFunc)
         {
-            var binder = new TabularQueryBinder();
+            var binder = new TabularQueryBinder((TabularQueryProvider)source.Provider);
             Expression sourceExpression = TabularEvaluator.PartialEval(source.Expression);
             Expression generatorExpression = TabularEvaluator.PartialEval(generator.Expression);
             var resultExpression = binder.BindGenerate(sourceExpression, generatorExpression, selectorFunc);
@@ -1015,7 +1015,7 @@ namespace LinqToDAX.Query
                 throw new NotImplementedException("Only available in a tabular query expression");
             }
 
-            var binder = new TabularQueryBinder();
+            var binder = new TabularQueryBinder(provider);
             var e = TabularEvaluator.PartialEval(table.Expression);
             var t = (ProjectionExpression)binder.Bind(e);
             string tableName = ColumnExpressionFactory.FindTableName(table.Expression);
@@ -1048,7 +1048,7 @@ namespace LinqToDAX.Query
                 throw new NotImplementedException("Only available in a tabular query expression");
             }
 
-            var binder = new TabularQueryBinder();
+            var binder = new TabularQueryBinder(provider);
             var e = TabularEvaluator.PartialEval(table.Expression);
             var t = (ProjectionExpression)binder.Bind(e);
             string tableName = ColumnExpressionFactory.FindTableName(table.Expression);
@@ -1131,7 +1131,7 @@ namespace LinqToDAX.Query
 
         private static ProjectionExpression ProjectionExpression<T, TValue>(Type returnType, IQueryable<T> table, Expression<Func<T, TValue>> projector, AggregationType aggregationType, MethodInfo method)
         {
-            var binder = new TabularQueryBinder();
+            var binder = new TabularQueryBinder(table.Provider as TabularQueryProvider);
             var e = TabularEvaluator.PartialEval(table.Expression);
             var methodCall = Expression.Call(null, method, new[] { e, projector });
             var type = returnType;

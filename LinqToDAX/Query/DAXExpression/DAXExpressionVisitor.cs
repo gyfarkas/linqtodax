@@ -171,10 +171,12 @@ namespace LinqToDAX.Query.DAXExpression
         protected virtual Expression VisitFilter(FilterExpression filterExpression)
         {
             Expression table = VisitSource(filterExpression.MainTable);
-            Expression where = Visit(filterExpression.Filter);
-            if (table != filterExpression.MainTable || where != filterExpression.Filter)
+            Expression @where = Visit(filterExpression.Filter);
+            ReadOnlyCollection<ColumnDeclaration> columns =
+                VisitColumnDeclarations(filterExpression.Columns);
+            if (table != filterExpression.MainTable || @where != filterExpression.Filter || columns != filterExpression.Columns)
             {
-                return new FilterExpression(filterExpression.Type, table, where);
+                return new FilterExpression(filterExpression.Type, table, @where, columns);
             }
 
             return filterExpression;
@@ -237,10 +239,10 @@ namespace LinqToDAX.Query.DAXExpression
 
         protected virtual ColumnDeclaration VisitColumnDeclaration(ColumnDeclaration columnDeclaration)
         {
-            var alternarte = Visit(columnDeclaration.Expression);
-            if (alternarte != columnDeclaration.Expression)
+            var alternate = Visit(columnDeclaration.Expression);
+            if (alternate != columnDeclaration.Expression && alternate is ColumnExpression)
             {
-                return new ColumnDeclaration(columnDeclaration.Name, columnDeclaration.Alias, alternarte);
+                return new ColumnDeclaration(columnDeclaration.Name, columnDeclaration.Alias, alternate);
             }
 
             return columnDeclaration;
@@ -265,7 +267,7 @@ namespace LinqToDAX.Query.DAXExpression
 
         protected virtual Expression VisitSubQuery(SubQueryProjection projectionExpression)
         {
-            return projectionExpression;
+           return projectionExpression;
         }
 
         protected virtual Expression VisitSource(Expression source)

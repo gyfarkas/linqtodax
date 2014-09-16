@@ -15,10 +15,10 @@ namespace LinqToDAX.Query
         /// <returns>boolean expressing whether the expression is a column</returns>
         internal static bool CanBeColumn(Expression node)
         {
-            return node.NodeType == (ExpressionType)DaxExpressionType.Column ||
-                   node.NodeType == (ExpressionType)DaxExpressionType.Measure ||
-                   node.NodeType == (ExpressionType)DaxExpressionType.Lookup ||
-                   node.NodeType == (ExpressionType)DaxExpressionType.XAggregation;
+            return node.NodeType == (ExpressionType) DaxExpressionType.Column ||
+                   node.NodeType == (ExpressionType) DaxExpressionType.Measure ||
+                   node.NodeType == (ExpressionType) DaxExpressionType.Lookup ||
+                   node.NodeType == (ExpressionType) DaxExpressionType.XAggregation;
         }
 
         /// <summary>
@@ -34,6 +34,18 @@ namespace LinqToDAX.Query
             }
 
             return e;
+        }
+
+        internal static LambdaExpression GetLambda(Expression e)
+        {
+            var quoteless = StripQuotes(e);
+            var lambda = quoteless as LambdaExpression;
+            if (lambda == null)
+            {
+                throw new TabularException("Should have been called with a lambda expression argument");
+            }
+
+            return lambda;
         }
     }
 }
