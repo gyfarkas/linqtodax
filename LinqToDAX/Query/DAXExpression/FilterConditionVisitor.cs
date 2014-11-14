@@ -7,7 +7,9 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace LinqToDAX.Query.DAXExpression
@@ -107,6 +109,7 @@ namespace LinqToDAX.Query.DAXExpression
                         return true;
                 }
 
+
                 return false;
             };
 
@@ -159,7 +162,6 @@ namespace LinqToDAX.Query.DAXExpression
             return base.VisitConstant(constant);
         }
 
-    
         /// <summary>
         /// Examine Binary expressions
         /// </summary>
@@ -167,6 +169,13 @@ namespace LinqToDAX.Query.DAXExpression
         /// <returns>the expression unchanged</returns>
         protected override Expression VisitBinary(BinaryExpression node)
         {
+            if ((node.Left is NewExpression || node.Left is ConstantExpression)
+                        && (node.Right is NewExpression || node.Right is ConstantExpression))
+            {
+                var extractor = new FilterConditionExtractor(node.NodeType, node.Left, node.Right);
+                var extracted = extractor.Extract();
+                return Visit(extracted);
+            }
             switch (node.NodeType)
             {
                 case ExpressionType.AndAlso:
@@ -174,15 +183,15 @@ namespace LinqToDAX.Query.DAXExpression
                     Visit(node.Right);
                     break;
                 case ExpressionType.NotEqual:
-                    _filterConditions.Add(node);
-                    return node;
+                    //_filterConditions.Add(node);
+                    //return node;
                 case ExpressionType.Equal:
                 case ExpressionType.LessThan:
                 case ExpressionType.GreaterThan:
                 case ExpressionType.GreaterThanOrEqual:
                 case ExpressionType.LessThanOrEqual:
                     var  bothColumns = node.Left is ColumnExpression && node.Right is ColumnExpression;
-
+                    
                     if (_isFilterCondition(node.Left) 
                         || _isFilterCondition(node.Right) 
                         || (bothColumns && !_hasSameColumn(node.Left, node.Right)))
@@ -190,10 +199,13 @@ namespace LinqToDAX.Query.DAXExpression
                         _filterConditions.Add(node);
                         return node;
                     }
-                    
-                    _calculateTableConditions.Add(node);
-                    
-                    break;
+                    //if (bothColumns)
+                   // {
+                        _calculateTableConditions.Add(node);
+                        return node;
+                   // }
+                   // break;
+
                 case ExpressionType.OrElse:
                     if (_isFilterCondition(node.Left) || _isFilterCondition(node.Right))
                     {

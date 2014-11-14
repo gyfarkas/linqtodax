@@ -135,9 +135,10 @@ namespace UnitTests
         [Test]
         public void TestCompareConstructedMultiValueEqual()
         {
+          
             var myentity = new {x = "London", y = "UK"};
             TestQuery(
-                _db.CustomerSet.Select(x => new { x.RelatedGeography.City, x.RelatedGeography.CountryRegionName })
+                _db.CustomerSet.Select(x => new { x.RelatedGeography.City, x.RelatedGeography.CountryRegionName, level = "1"})
                 .Where(c => new { x = c.City, y = c.CountryRegionName } == myentity)
                 );
         }

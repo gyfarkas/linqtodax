@@ -43,7 +43,6 @@ namespace LinqToDAX.QueryFormatter
             return aggregationExpression;
         }
 
-
         /// <summary>
         /// Formatting binary expressions are special in filter expressions
         /// </summary>
