@@ -108,7 +108,8 @@ namespace LinqToDAX
         /// <returns>the result of the query</returns>
         public TResult Execute<TResult>(Expression expression)
         {
-           return (TResult)this.Execute(Translate(expression)); 
+            var tr = Translate(expression);
+           return (TResult)this.Execute(tr); 
         }
 
         /// <summary>
@@ -156,7 +157,11 @@ namespace LinqToDAX
         {
             var projection = expression as ProjectionExpression;
             var subQuery = expression as SubQueryProjection;
-            
+            var groupQuery = expression as GroupingProjection;
+            if (groupQuery != null)
+            {
+                throw new TabularException("no grouping yet");
+            }
             if (subQuery != null)
             {
                 projection = subQuery.Projection;

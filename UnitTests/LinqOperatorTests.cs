@@ -55,6 +55,26 @@ namespace UnitTests
             Assert.IsNotNull(result);
         }
 
+
+        [Test]
+        public void GroupByelementSelector()
+        {
+
+            var elems = new[]
+            {
+                new {s = "a", v = 1},
+                new {s = "a", v = 1},
+                new {s = "a", v = 1},
+                new {s = "b", v = 1},
+                new {s = "b", v = 1}
+
+            };
+            
+            var res = elems.GroupBy(x => x.s, x => x.v).Select(g => System.Linq.Enumerable.Sum(g)).ToList();
+            Assert.IsNotNull(res);
+
+        }
+
         [Test]
         public void GroupByTest()
         {
@@ -74,12 +94,12 @@ namespace UnitTests
             var r = listq.ToList();
             var f = r.First();
            var q =
-                from g in _db.GeographySet
+                from gr in _db.GeographySet
                 from c in _db.CustomerSet         
                 group c by new
                 {
                     c.Gender,
-                    g.City,
+                    gr.City,
                     c.Education
                 } into g
                 select new
@@ -319,26 +339,27 @@ namespace UnitTests
                 );
         }
 
+        [Test]
         public void TestMultipleJoinsWithJoinConditionsInWhere()
         {
             // this should reduce to inner joins
             TestQuery(
+                from d in _db.SalesTerritorySet
                 from c in _db.CustomerSet
                 from o in _db.InternetSalesSet
-                from d in _db.SalesTerritorySet
                 where o.CustomerKey == c.CustomerKey && o.SalesTerritoryKey == d.SalesTerritoryKey
                 where c.CustomerId == "ALFKI"
                 select d.SalesTerritoryCountry
                 );
         }
-
+        [Test]
         public void TestMultipleJoinsWithMissingJoinCondition()
         {
             // this should force a naked cross join
             TestQuery(
                 from c in _db.CustomerSet
-                from o in _db.InternetSalesSet
                 from d in _db.SalesTerritorySet
+                from o in _db.InternetSalesSet
                 where o.CustomerKey == c.CustomerKey //&& o.SalesTerritoryKey == d.SalesTerritoryKey
                 where c.CustomerId == "ALFKI"
                 select d.SalesTerritoryCountry
@@ -414,6 +435,7 @@ namespace UnitTests
         }
         */
 
+        [Test]
         public void TestGroupBy()
         {
             TestQuery(
@@ -421,71 +443,80 @@ namespace UnitTests
                 );
         }
 
+        [Test]
         public void TestGroupBySelectMany()
         {
             TestQuery(
-                _db.CustomerSet.GroupBy(c => c.RelatedGeography.City).SelectMany(g => g)
+                _db.CustomerSet
+                .GroupBy(c => c.RelatedGeography.City)
+                .SelectMany(g => g)
                 );
         }
 
+        [Test]
         public void TestGroupBySum()
         {
             TestQuery(
                 _db.InternetSalesSet.GroupBy(o => o.CustomerKey).Select(g => g.Sum(o => o.SalesAmount))
                 );
         }
-        
-        /*
+
+        [Test]
         public void TestGroupByCount()
         {
             TestQuery(
-                db.Orders.GroupBy(o => o.CustomerID).Select(g => g.Count())
+                 _db.InternetSalesSet.GroupBy(o => o.CustomerKey).Select(g => g.Count())
                 );
         }
 
+        [Test]
         public void TestGroupByLongCount()
         {
             TestQuery(
-                db.Orders.GroupBy(o => o.CustomerID).Select(g => g.LongCount())
+                 _db.InternetSalesSet.GroupBy(o => o.CustomerKey).Select(g => g.LongCount())
                 );
         }
 
+        [Test]
         public void TestGroupBySumMinMaxAvg()
         {
             TestQuery(
-                db.Orders.GroupBy(o => o.CustomerID).Select(g =>
+                 _db.InternetSalesSet.GroupBy(o => o.CustomerKey).Select(g =>
                     new
                     {
-                        Sum = g.Sum(o => o.OrderID),
-                        Min = g.Min(o => o.OrderID),
-                        Max = g.Max(o => o.OrderID),
-                        Avg = g.Average(o => o.OrderID)
+                        Sum = g.Sum(o => o.CustomerKey),
+                        Min = g.Min(o => o.CustomerKey),
+                        Max = g.Max(o => o.CustomerKey),
+                        Avg = g.Average(o => o.CustomerKey)
                     })
                 );
         }
 
+        [Test]
         public void TestGroupByWithResultSelector()
         {
             TestQuery(
-                db.Orders.GroupBy(o => o.CustomerID, (k, g) =>
+                _db.InternetSalesSet.GroupBy(o => o.CustomerKey, (k, g) =>
                     new
                     {
-                        Sum = g.Sum(o => o.OrderID),
-                        Min = g.Min(o => o.OrderID),
-                        Max = g.Max(o => o.OrderID),
-                        Avg = g.Average(o => o.OrderID)
+                        Sum = g.Sum(o => o.OrderQuantity),
+                        Min = g.Min(o => o.OrderQuantity),
+                        Max = g.Max(o => o.OrderQuantity),
+                        Avg = g.Average(o => o.OrderQuantity)
                     })
                 );
         }
-        */
 
+        [Test]
         public void TestGroupByWithElementSelectorSum()
         {
+            var s = _db.InternetSalesSet.GroupBy(o => o.CustomerKey, o => o.SalesAmount).Select(g => g.Sum());
             TestQuery(
-                _db.InternetSalesSet.GroupBy(o => o.CustomerKey, o => o.SalesOrderNumber).Select(g => g.Sum())
+                _db.InternetSalesSet.GroupBy(o => o.CustomerKey, o => o.SalesAmount).Select(g => g.Sum())
                 );
         }
 
+        [Test]
         public void TestGroupByWithElementSelector()
         {
             // note: groups are retrieved through a separately execute subquery per row
@@ -493,22 +524,26 @@ namespace UnitTests
                 _db.InternetSalesSet.GroupBy(o => o.CustomerKey, o => o.SalesOrderNumber)
                 );
         }
-        /*
+
+        [Test]
         public void TestGroupByWithElementSelectorSumMax()
         {
             TestQuery(
-                db.Orders.GroupBy(o => o.CustomerID, o => o.OrderID).Select(g => new { Sum = g.Sum(), Max = g.Max() })
+                _db.InternetSalesSet.GroupBy(o => o.CustomerKey, o => o.OrderQuantity).Select(g => new { Sum = g.Sum(), Max = g.Max() })
                 );
         }
-        */
 
+        [Test]
         public void TestGroupByWithAnonymousElement()
         {
             TestQuery(
-                 _db.InternetSalesSet.GroupBy(o => o.CustomerKey, o => new { o.SalesTerritoryKey }).Select(g => g.Sum(x => x.SalesTerritoryKey))
+                 _db.InternetSalesSet
+                 .GroupBy(o => o.CustomerKey, o => new { o.SalesTerritoryKey })
+                 .Select(g => g.Sum(x => x.SalesTerritoryKey))
                 );
         }
 
+        [Test]
         public void TestGroupByWithTwoPartKey()
         {
             TestQuery(
@@ -651,12 +686,14 @@ namespace UnitTests
         }
         */
 
+        [Test]
         public void TestTake()
         {
             TestQuery(
                 _db.InternetSalesSet.Take(5)
                 );
         }
+
         /*
         public void TestTakeDistinct()
         {

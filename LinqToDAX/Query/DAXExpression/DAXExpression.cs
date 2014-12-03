@@ -107,7 +107,12 @@ namespace LinqToDAX.Query.DAXExpression
         /// <summary>
         /// Type flag for subQueries
         /// </summary>
-        SubQuery
+        SubQuery,
+
+        /// <summary>
+        /// Type flag for grouping projection
+        /// </summary>
+        Grouping,
     }
 
     /// <summary>

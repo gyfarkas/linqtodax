@@ -54,6 +54,7 @@
     <Compile Include="QueryFormatter\GenerateVisitor.cs" />
     <Compile Include="Query\DAXExpression\FilterConditionExtractor.cs" />
     <Compile Include="Query\DAXExpression\FilterConditionVisitor.cs" />
+    <Compile Include="Query\DAXExpression\GroupingProjection.cs" />
     <Compile Include="Query\DAXExpression\SubQueryProjection.cs" />
     <Compile Include="Query\Nominator.cs" />
     <Compile Include="Query\Projection.cs" />

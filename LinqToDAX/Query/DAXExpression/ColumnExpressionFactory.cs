@@ -108,6 +108,13 @@ namespace LinqToDAX.Query.DAXExpression
         {
             _measureCounter++;
             Expression c = _binder.Visit(node.Arguments[0]);
+            Type t = node.Method.ReturnType;
+            if (c is GroupingProjection)
+            {
+                GroupingProjection grp = ((GroupingProjection) c);
+                c = grp.SubQueryProjectionExpression.Projector;
+                t = grp.SubQueryProjectionExpression.Projector.Type;
+            }
             var col = (ColumnExpression)c;
             var table = col.TableName;
 
@@ -118,7 +125,7 @@ namespace LinqToDAX.Query.DAXExpression
             if (node.Arguments.Count() == 1)
             {
                 return new MeasureExpression(
-                    node.Method.ReturnType,
+                    t, //node.Method.ReturnType,
                     name,
                     dbname,
                     name,
@@ -136,23 +143,23 @@ namespace LinqToDAX.Query.DAXExpression
                     break;
             }
 
-            return new MeasureExpression(node.Method.ReturnType, (ExpressionType)DaxExpressionType.Measure,  name, dbname, name, table, filter);
+            return new MeasureExpression(t, (ExpressionType)DaxExpressionType.Measure,  name, dbname, name, table, filter);
         }
 
         internal Expression CreateXAggregationFromLambda(Type t, AggregationType aggregationType, Expression expression, Expression table)
         {
             _measureCounter++;
             var tableName = FindTableName(table);
-            switch (expression.NodeType)
-            {
-                case ExpressionType.Add:
-                case ExpressionType.Multiply:
+            //switch (expression.NodeType)
+            //{
+            //    case ExpressionType.Add:
+            //    case ExpressionType.Multiply:
                     
-                    return new XAggregationExpression(aggregationType, table, expression, "[" + aggregationType + _measureCounter + "]", tableName, t);
-                    
-                default:
-                    throw new TabularException("Aggregation argument should refer to a member");
-            }
+            return new XAggregationExpression(aggregationType, table, expression, "[" + aggregationType + _measureCounter + "]", tableName, t);
+            //    default:
+
+            //        throw new TabularException("Aggregation argument should refer to a member");
+            //}
         }
 
 
@@ -228,6 +235,14 @@ namespace LinqToDAX.Query.DAXExpression
                 }
             }
 
+           
+            var tableFinder = new Finder<TableExpression>();
+            tableFinder.Visit(node);
+            if (tableFinder.Found)
+            {
+                return tableFinder.First.Name;
+            }
+
             var tableName = string.Empty;
             var finder = new Finder<ConstantExpression>();
             finder.Visit(node);
@@ -241,7 +256,7 @@ namespace LinqToDAX.Query.DAXExpression
                     tableName = att.TableName;
                 }
             }
-
+           
             return tableName;
         }
 

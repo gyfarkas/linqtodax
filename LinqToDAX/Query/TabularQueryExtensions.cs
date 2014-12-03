@@ -149,6 +149,11 @@ namespace LinqToDAX.Query
             throw new NotImplementedException("Only available in a tabular query expression");
         }
 
+        public static T Sum<T, U>(this IGrouping<U, T> grp)
+        {
+            throw new NotImplementedException("Only available in a tabular query expression");
+        }
+
         /// <summary>
         /// The sum.
         /// </summary>

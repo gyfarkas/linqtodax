@@ -60,9 +60,23 @@ namespace LinqToDAX.Query.DAXExpression
                     return VisitValues((ValuesExpression)node);
                 case DaxExpressionType.UseRelationship:
                     return VisitUseRelationship((UseRelationshipExpression)node);
+                case DaxExpressionType.Grouping:
+                    return VisitGroupingProjection((GroupingProjection) node);
             }
             
             return base.Visit(node);
+        }
+
+        private Expression VisitGroupingProjection(GroupingProjection groupingProjection)
+        {
+            var key = (ProjectionExpression) Visit(groupingProjection.KeyProjection);
+            var subQuery = (ProjectionExpression) Visit(groupingProjection.SubQueryProjectionExpression);
+            if (key != groupingProjection.KeyProjection || subQuery != groupingProjection.SubQueryProjectionExpression)
+            {
+                return new GroupingProjection(groupingProjection.Type, key ,subQuery);
+            }
+
+            return groupingProjection;
         }
 
         protected virtual Expression VisitUseRelationship(UseRelationshipExpression node)

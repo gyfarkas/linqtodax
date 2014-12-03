@@ -11,11 +11,6 @@ namespace LinqToDAX.Query.DAXExpression
 
     internal class FilterConditionExtractor :DaxExpressionVisitor
     {
-
-        private ReadOnlyCollection<Expression> _foundArguments;
-
-        private ReadOnlyCollection<MemberInfo> _foundMemberInfos;
-
         private Dictionary<MemberInfo, Tuple<Expression, Expression>> _memberMapping =new Dictionary<MemberInfo, Tuple<Expression, Expression>>(); 
 
         private readonly ExpressionType _nodeType;
