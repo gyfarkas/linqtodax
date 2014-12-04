@@ -465,7 +465,7 @@ namespace UnitTests
         public void TestGroupByCount()
         {
             TestQuery(
-                 _db.InternetSalesSet.GroupBy(o => o.CustomerKey).Select(g => g.Count())
+                 _db.InternetSalesSet.GroupBy(o => o.CustomerKey).Select(g => g.Select(x => x.ShipDate).DistinctCount())
                 );
         }
 
@@ -495,14 +495,15 @@ namespace UnitTests
         [Test]
         public void TestGroupByWithResultSelector()
         {
+           
             TestQuery(
                 _db.InternetSalesSet.GroupBy(o => o.CustomerKey, (k, g) =>
                     new
                     {
                         Sum = g.Sum(o => o.OrderQuantity),
                         Min = g.Min(o => o.OrderQuantity),
-                        Max = g.Max(o => o.OrderQuantity),
-                        Avg = g.Average(o => o.OrderQuantity)
+                        Max = g.Max(o => o.OrderQuantity)
+                        //Avg = g.Average(o => o.OrderQuantity)
                     })
                 );
         }
@@ -520,6 +521,7 @@ namespace UnitTests
         public void TestGroupByWithElementSelector()
         {
             // note: groups are retrieved through a separately execute subquery per row
+            var r = _db.InternetSalesSet.GroupBy(o => o.CustomerKey, o => o.SalesOrderNumber).Select(x => x);
             TestQuery(
                 _db.InternetSalesSet.GroupBy(o => o.CustomerKey, o => o.SalesOrderNumber)
                 );

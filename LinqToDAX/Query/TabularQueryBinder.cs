@@ -190,17 +190,18 @@ namespace LinqToDAX.Query
                     case "ThenByDescending":
                         return BindOrderBy(node.Type, node.Arguments[0], (LambdaExpression)TabularExpressionHelper.StripQuotes(node.Arguments[1]));
                     case "Sum":
-                        return BindSum(node);
+                        return BindAggregation(node, AggregationType.Sum);
                     case "Count":
-                        return BindSum(node);
+                        throw new TabularException("int Count is not supported use LongCount or tabular defined countx, distinctcount or countrows");
+                        //return BindAggregation(node, AggregationType.Count);
                     case "LongCount":
-                        return BindSum(node);
+                        return BindAggregation(node, AggregationType.Count);
                     case "Average":
-                        return BindSum(node);
+                        return BindAggregation(node, AggregationType.Avg);
                     case "Min":
-                        return BindSum(node);
+                        return BindAggregation(node, AggregationType.Min);
                     case "Max":
-                        return BindSum(node);
+                        return BindAggregation(node, AggregationType.Max);
                     default:
                         throw new NotImplementedException(string.Format("no method to deal with : {0}", node.Method.Name));
                 }
@@ -483,7 +484,7 @@ namespace LinqToDAX.Query
             return base.VisitMethodCall(node);
         }
 
-        private Expression BindSum(Expression node)
+        private Expression BindAggregation(Expression node, AggregationType aggregationType)
         {
             var method = (MethodCallExpression)node;
             if (method.Arguments.Count() == 1)
@@ -496,7 +497,7 @@ namespace LinqToDAX.Query
                 }
                 if (p is GroupingProjection)
                 {
-                    proj = ((GroupingProjection) p).SubQueryProjectionExpression;
+                    proj = ((GroupingProjection) p).KeyProjection;
                 }
                 if (proj == null)
                 {
@@ -505,23 +506,45 @@ namespace LinqToDAX.Query
                 var column = proj.Projector as ColumnExpression;
                     if (column != null)
                     {
-                        var e = string.Format("SUM({0})", column.DbName);
+                        string aggregationString;
+                        switch (aggregationType)
+                        {
+                            case AggregationType.Sum:
+                                aggregationString = string.Format("SUM({0})", column.DbName);
+                                break;
+                            case AggregationType.Max:
+                                aggregationString = string.Format("MAX({0})", column.DbName);
+                                break;
+                            case AggregationType.Avg:
+                                aggregationString = string.Format("AVERAGE({0})", column.DbName);
+                                break;
+                            case AggregationType.Min:
+                                aggregationString = string.Format("MIN({0})", column.DbName);
+                                break;
+                            case AggregationType.Count:
+                            case AggregationType.LongCount:
+                                 aggregationString = string.Format("DISTINCTCOUNT({0})", column.DbName);
+                                break;
+                            default: 
+                                throw new NotImplementedException(String.Format("not implemented aggregation detected: {0}", aggregationType));
+                        }
+                        
                         if ((DaxExpressionType)proj.Source.NodeType == DaxExpressionType.CalculateTable)
                         {
                             return new MeasureExpression(
                                 method.Method.ReturnType, 
                                 (ExpressionType)DaxExpressionType.Measure, 
-                                "[SumOf" + column.Name + "]", 
-                                e, 
-                                "[SumOf" + column.Name + "]", 
+                                "[AggregateOf" + column.Name + "]", 
+                                aggregationString, 
+                                "[AggregateOf" + column.Name + "]", 
                                 column.TableName, 
                                 ((CalculateTableExpression)proj.Source).Filters);
                         }
 
-                        return new MeasureExpression(method.Method.ReturnType, "[SumOf" + column.Name + "]", e, "[SumOf" + column.Name + "]", column.TableName);
+                        return new MeasureExpression(method.Method.ReturnType, "[AggregateOf" + column.Name + "]", aggregationString, "[AggregateOf" + column.Name + "]", column.TableName);
                     }
                 
-                return _columnExpressionFactory.CreateXAggregationFromLambda(proj.Projector.Type, AggregationType.Sum, proj.Projector, proj.Source);
+                return _columnExpressionFactory.CreateXAggregationFromLambda(proj.Projector.Type, aggregationType, proj.Projector, proj.Source);
             }
 
             if (method.Arguments.Count() == 2)
@@ -550,7 +573,7 @@ namespace LinqToDAX.Query
                     var body = Visit(lambdaExpression.Body);
                     ProjectedColumns e = new ColumnProjector(TabularExpressionHelper.CanBeColumn).ProjectColumns(body);
                     var grp = new ProjectionExpression(new ProjectionExpression(calculateTable, proj3.Projector), e.Projector);
-                    return _columnExpressionFactory.CreateXAggregationFromLambda(method.Method.ReturnType, AggregationType.Sum, grp.Projector, grp.Source);
+                    return _columnExpressionFactory.CreateXAggregationFromLambda(method.Method.ReturnType, aggregationType, grp.Projector, grp.Source);
                 }   
             }
             
@@ -642,12 +665,40 @@ namespace LinqToDAX.Query
 
             if (elementlambda != null)
             {
-                _parameterMap[elementlambda.Parameters[0]] = projection.Projector;
-                var elements = Visit(elementlambda.Body);
-                var elementColumns = ProjectColumns(elements);
+                ProjectedColumns elementColumns ;
+                
+                /// with result selector
+                if (elementlambda.Parameters.Count == 2)
+                {
+                    _parameterMap[elementlambda.Parameters[0]] = keyProjection.Projector;
+                    _parameterMap[elementlambda.Parameters[1]] = projection;
+                    var elements = Visit(elementlambda.Body);
+                    elementColumns = ProjectColumns(elements);
 
-                subQueryProjection = new ProjectionExpression(elementlambda.Body.Type, projection,
-                    elementColumns.Projector);
+                    return new ProjectionExpression(
+                        DaxExpressionFactory.Create(
+                            type, 
+                            keyColumns.Columns.Union(elementColumns.Columns).Distinct(),
+                            projection.Source)
+                       , elementColumns.Projector);
+
+                    return DaxExpressionFactory.Create(type, keyColumns.Columns.Union(elementColumns.Columns),
+                        elementColumns.Projector);
+
+                    subQueryProjection = new ProjectionExpression(elementlambda.Body.Type, projection,
+                        elementColumns.Projector);
+                }
+                /// Only element selector
+                else
+                {
+                    _parameterMap[elementlambda.Parameters[0]] = projection.Projector;
+                    var elements = Visit(elementlambda.Body);
+                    elementColumns = ProjectColumns(elements);
+
+                    subQueryProjection = new ProjectionExpression(elementlambda.Body.Type, projection,
+                        elementColumns.Projector);
+                }
+
 
                 if (resultlambda != null)
                 {
@@ -716,7 +767,7 @@ namespace LinqToDAX.Query
                         var subquery = new SubQueryProjection(lambdaExpression.ReturnType, p);
                         return new ProjectionExpression(new SummarizeExpression(t,new List<ColumnDeclaration>().AsReadOnly(), projection.Source),subquery);
                     }
-
+                    
                     return summarize;
                 }
 

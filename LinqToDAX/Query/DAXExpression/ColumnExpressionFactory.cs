@@ -115,35 +115,47 @@ namespace LinqToDAX.Query.DAXExpression
                 c = grp.SubQueryProjectionExpression.Projector;
                 t = grp.SubQueryProjectionExpression.Projector.Type;
             }
-            var col = (ColumnExpression)c;
-            var table = col.TableName;
-
-            // TODO: Add a level of indirection here as well see XAggregations
-            string dbname = node.Method.Name.ToUpper() + "(" + col.DbName + ")";
-           
-            string name = string.Format("[{0}Of{1}{2}]", node.Method.Name, col.Name, _measureCounter);
-            if (node.Arguments.Count() == 1)
+            if (c is ProjectionExpression)
             {
-                return new MeasureExpression(
-                    t, //node.Method.ReturnType,
-                    name,
-                    dbname,
-                    name,
-                    table);
+
+                c = ((ProjectionExpression) c).Projector;
             }
 
-            Expression filter;
-            switch (node.Arguments[1].NodeType)
+            var col = c as ColumnExpression;
+            if (col != null)
             {
-                case ExpressionType.Parameter:
-                    filter = TableFactory.GetTableExpression(node.Arguments[1]);
-                    break;
-                default:
-                    filter = _binder.Visit(node.Arguments[1]);
-                    break;
-            }
+                var table = col.TableName;
 
-            return new MeasureExpression(t, (ExpressionType)DaxExpressionType.Measure,  name, dbname, name, table, filter);
+                // TODO: Add a level of indirection here as well see XAggregations
+                string dbname = node.Method.Name.ToUpper() + "(" + col.DbName + ")";
+
+                string name = string.Format("[{0}Of{1}{2}]", node.Method.Name, col.Name, _measureCounter);
+                if (node.Arguments.Count() == 1)
+                {
+                    return new MeasureExpression(
+                        t, //node.Method.ReturnType,
+                        name,
+                        dbname,
+                        name,
+                        table);
+                }
+
+                Expression filter;
+                switch (node.Arguments[1].NodeType)
+                {
+                    case ExpressionType.Parameter:
+                        filter = TableFactory.GetTableExpression(node.Arguments[1]);
+                        break;
+                    default:
+                        filter = _binder.Visit(node.Arguments[1]);
+                        break;
+                }
+
+                return new MeasureExpression(t, (ExpressionType) DaxExpressionType.Measure, name, dbname, name, table,
+                    filter);
+            }
+            
+            throw new TabularException("could not create measure: the column reference was not found");
         }
 
         internal Expression CreateXAggregationFromLambda(Type t, AggregationType aggregationType, Expression expression, Expression table)

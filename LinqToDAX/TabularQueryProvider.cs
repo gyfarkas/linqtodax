@@ -6,6 +6,10 @@
 //   This provider version uses expressions as internal representation of queries throughout
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
+
+using System.Collections.Specialized;
+using System.Text.RegularExpressions;
+
 namespace LinqToDAX
 {
     using System;
@@ -109,7 +113,8 @@ namespace LinqToDAX
         public TResult Execute<TResult>(Expression expression)
         {
             var tr = Translate(expression);
-           return (TResult)this.Execute(tr); 
+            
+            return (TResult)this.Execute(tr); 
         }
 
         /// <summary>
@@ -161,6 +166,9 @@ namespace LinqToDAX
             if (groupQuery != null)
             {
                 throw new TabularException("no grouping yet");
+                var query = new TabularGroupByRewriter(groupQuery).Rewrite();
+                return Translate(query);
+                
             }
             if (subQuery != null)
             {

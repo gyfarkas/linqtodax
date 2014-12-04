@@ -174,7 +174,8 @@ namespace LinqToDAX.Query.DAXExpression
         /// <summary>
         /// Count Rows
         /// </summary>
-        CountRows
+        CountRows,
+        LongCount
     }
 
     /// <summary>

@@ -130,6 +130,12 @@ namespace LinqToDAX.Query
             throw new NotImplementedException("Only available in a tabular query expression");
         }
 
+        public static T Average<T, U>(this IGrouping<U, T> grp)
+        {
+            throw new NotImplementedException("Only available in a tabular query expression");
+        }
+
+
         /// <summary>
         /// The sum.
         /// </summary>
@@ -269,6 +275,12 @@ namespace LinqToDAX.Query
             throw new NotImplementedException("Only available in a tabular query expression");
         }
 
+        public static T Max<T, U>(this IGrouping<U, T> grp)
+        {
+            throw new NotImplementedException("Only available in a tabular query expression");
+        }
+
+
         /// <summary>
         /// The min.
         /// </summary>
@@ -332,6 +344,11 @@ namespace LinqToDAX.Query
          System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters",
              MessageId = "column", Justification = "Method is translated")]
         public static T Min<T>(this T column, ITabularData filterExp)
+        {
+            throw new NotImplementedException("Only available in a tabular query expression");
+        }
+
+        public static T Min<T, U>(this IGrouping<U, T> grp)
         {
             throw new NotImplementedException("Only available in a tabular query expression");
         }
