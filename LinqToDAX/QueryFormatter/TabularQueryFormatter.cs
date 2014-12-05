@@ -43,7 +43,7 @@ namespace LinqToDAX.QueryFormatter
         /// </summary>
         /// <param name="node">expression node to be formatted as query string</param>
         /// <returns>the query string</returns>
-        internal string Format(Expression node)
+        internal string Format(Expression node, IEnumerable<Tuple<Expression,OrderType>> orderbys)
         {
             this.Builder = new StringBuilder();
             var measures = new MeasureCollector().Collect(node).ToList();
@@ -59,6 +59,29 @@ namespace LinqToDAX.QueryFormatter
            
             this.Builder.Append("EVALUATE\n");
             Visit(node);
+            
+            var orderColumns = orderbys.Select(ot =>
+            {
+                var o = ot.Item1;
+                var t = ot.Item2.ToString();
+                
+                var expression = o as MeasureExpression;
+                if (expression != null)
+                {
+                    return expression.Alias + " " + t;
+                }
+
+                var columnExpression = o as ColumnExpression;
+                return columnExpression != null ? columnExpression.DbName + " " + t :"";
+            });
+
+            var orderbyString = orderColumns.DefaultIfEmpty().Distinct().Aggregate((x, y) =>  String.IsNullOrWhiteSpace(y) ? x : x + "," + y);
+            Builder.Append("\n");
+            if (!String.IsNullOrWhiteSpace(orderbyString))
+            {
+                Builder.Append("ORDER BY ");
+                Builder.Append(orderbyString);
+            }
             return this.Builder.ToString();
         }
 

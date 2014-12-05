@@ -54,7 +54,17 @@ namespace LinqToDAX.Query
         /// Map that keeps track of parameters and their reference
         /// </summary>
         private Dictionary<ParameterExpression, Expression> _parameterMap;
-       
+
+        private List<Tuple<Expression, OrderType>> _orderBys;
+
+        internal ReadOnlyCollection<Tuple<Expression, OrderType>> OrderByColumns
+        {
+            get
+            {
+                return new ReadOnlyCollection<Tuple<Expression, OrderType>>(this._orderBys);
+            } 
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TabularQueryBinder"/> class. 
         /// </summary>
@@ -65,6 +75,7 @@ namespace LinqToDAX.Query
             _tableFactory = new TableFactory(this);
             _allExpressionFactory = new AllExpressionFactory(this);
             _parameterMap = new Dictionary<ParameterExpression, Expression>();
+            _orderBys = new List<Tuple<Expression, OrderType>>();
             Provider = provider;
         }
 
@@ -170,14 +181,26 @@ namespace LinqToDAX.Query
                     case "GroupBy":
                         if (node.Arguments.Count == 2)
                         {
-                            return BindGroupBy(node.Type, node.Arguments[0], TabularExpressionHelper.GetLambda(node.Arguments[1]), null, null);    
+                            return this.BindGroupBy(node.Type, node.Arguments[0], (LambdaExpression) TabularExpressionHelper.StripQuotes(node.Arguments[1]), null, null);
                         }
                         else if (node.Arguments.Count == 3)
                         {
-                            return BindGroupBy(node.Type, node.Arguments[0], TabularExpressionHelper.GetLambda(node.Arguments[1]), TabularExpressionHelper.GetLambda(node.Arguments[2]), null);    
-                        } else if (node.Arguments.Count == 4)
+                            var lambda1 = (LambdaExpression) TabularExpressionHelper.StripQuotes(node.Arguments[1]);
+                            var lambda2 = (LambdaExpression) TabularExpressionHelper.StripQuotes(node.Arguments[2]);
+                            if (lambda2.Parameters.Count == 1)
+                            {
+                                // second lambda is element selector
+                                return this.BindGroupBy(node.Type, node.Arguments[0], lambda1, lambda2, null);
+                            }
+                            else if (lambda2.Parameters.Count == 2)
+                            {
+                                // second lambda is result selector
+                                return this.BindGroupBy(node.Type, node.Arguments[0], lambda1, null, lambda2);
+                            }
+                        }
+                        else if (node.Arguments.Count == 4)
                         {
-                            return BindGroupBy(node.Type, node.Arguments[0], TabularExpressionHelper.GetLambda(node.Arguments[1]), TabularExpressionHelper.GetLambda(node.Arguments[2]), TabularExpressionHelper.GetLambda(node.Arguments[1]));    
+                            return this.BindGroupBy(node.Type, node.Arguments[0], (LambdaExpression)TabularExpressionHelper.StripQuotes(node.Arguments[1]), (LambdaExpression)TabularExpressionHelper.StripQuotes(node.Arguments[2]), (LambdaExpression) TabularExpressionHelper.StripQuotes(node.Arguments[3]));
                         }
                         break;
                     case "Join":
@@ -185,10 +208,13 @@ namespace LinqToDAX.Query
                     case "GroupJoin":
                         throw new NotImplementedException();
                     case "OrderBy":
+                        return BindOrderBy(node.Type, node.Arguments[0], (LambdaExpression)TabularExpressionHelper.StripQuotes(node.Arguments[1]),OrderType.Asc);
                     case "OrderByDescending":
+                        return BindOrderBy(node.Type, node.Arguments[0], (LambdaExpression)TabularExpressionHelper.StripQuotes(node.Arguments[1]),OrderType.Desc);
                     case "ThenBy":
+                        return BindOrderBy(node.Type, node.Arguments[0], (LambdaExpression)TabularExpressionHelper.StripQuotes(node.Arguments[1]),OrderType.Asc);
                     case "ThenByDescending":
-                        return BindOrderBy(node.Type, node.Arguments[0], (LambdaExpression)TabularExpressionHelper.StripQuotes(node.Arguments[1]));
+                        return BindOrderBy(node.Type, node.Arguments[0], (LambdaExpression)TabularExpressionHelper.StripQuotes(node.Arguments[1]), OrderType.Desc);
                     case "Sum":
                         return BindAggregation(node, AggregationType.Sum);
                     case "Count":
@@ -202,6 +228,9 @@ namespace LinqToDAX.Query
                         return BindAggregation(node, AggregationType.Min);
                     case "Max":
                         return BindAggregation(node, AggregationType.Max);
+                    // Distinct is always implicit in selects so we skip it
+                    case "Distinct" :
+                        return Visit(node.Arguments[0]);
                     default:
                         throw new NotImplementedException(string.Format("no method to deal with : {0}", node.Method.Name));
                 }
@@ -215,9 +244,25 @@ namespace LinqToDAX.Query
             return TabularFunction(node);
         }
 
-        private Expression BindOrderBy(Type type, Expression expression, LambdaExpression lambdaExpression)
+        private Expression BindOrderBy(Type type, Expression expression, LambdaExpression lambdaExpression, OrderType orderType)
         {
-            throw new NotImplementedException("order by");
+            var source = Visit(expression);
+            var projectionExpression = source as ProjectionExpression;
+            if (projectionExpression != null)
+            {
+                _parameterMap[lambdaExpression.Parameters[0]] = projectionExpression.Projector ;
+            }
+            else    
+            {
+                _parameterMap[lambdaExpression.Parameters[0]] = source;
+            }
+            
+            var os = Visit(lambdaExpression.Body);
+            
+            _orderBys.Add(Tuple.Create(os,orderType));
+            
+            
+            return source;
         }
 
         /// <summary>
@@ -355,12 +400,14 @@ namespace LinqToDAX.Query
             if (args.Any(a => 
                 (DaxExpressionType)a.NodeType == DaxExpressionType.Projection 
                 || (DaxExpressionType)a.NodeType == DaxExpressionType.SubQuery
+                || (DaxExpressionType)a.NodeType == DaxExpressionType.Grouping
                 || (DaxExpressionType)a.NodeType == DaxExpressionType.Table))
             {
                 var changed = false;
                 for (int i = 0; i < args.Length; i++)
                 {
                     var p = args[i] as ProjectionExpression;
+                    var g = args[i] as GroupingProjection;
 
                     if ((p != null && p.Source == null) || args[i] is SubQueryProjection)
                     {
@@ -374,6 +421,11 @@ namespace LinqToDAX.Query
                         var proj = (ProjectionExpression)args[i];
                         args[i] = new SubQueryProjection(type, proj); 
                         changed = true;
+                    }
+
+                    if (g != null)
+                    {
+                        throw new TabularException("Grouping cannot be selected");
                     }
                    
                 }
@@ -593,17 +645,35 @@ namespace LinqToDAX.Query
             var hasMeasure = new Finder<MeasureExpression>(); // MeasureFinder();
             ProjectedColumns pc = new ColumnProjector(TabularExpressionHelper.CanBeColumn).ProjectColumns(table.Projector);
 
-            Expression orderby;
+            Expression orderby = null;
 
-            if (hasMeasure.Has(table.Source))
+            if (_orderBys.Any())
             {
-                orderby = new OrderByExpression(type, hasMeasure.First, OrderType.Desc);
-            }
-            else
-            {
-                orderby = new OrderByExpression(type, (ColumnExpression)pc.Columns.First().Expression, OrderType.Desc);
+                
+                var o = _orderBys.First();
+                if (o.Item1 is MeasureExpression)
+                {
+                    orderby = new OrderByExpression(type,(MeasureExpression)o.Item1, o.Item2);
+                }
+                if (o.Item1 is ColumnExpression)
+                {
+                    orderby = new OrderByExpression(type, (ColumnExpression)o.Item1, o.Item2);
+                }
+
             }
 
+            if(orderby == null)
+            {
+                if (hasMeasure.Has(table.Source))
+                {
+                    orderby = new OrderByExpression(type, hasMeasure.First, OrderType.Desc);
+                }
+                else
+                {
+                    orderby = new OrderByExpression(type, (ColumnExpression) pc.Columns.First().Expression,
+                        OrderType.Desc);
+                }
+            }
             return new ProjectionExpression(
                 new TopnExpression(type, table.Source, orderby, (int)n.Value),
                 table.Projector);
@@ -615,7 +685,7 @@ namespace LinqToDAX.Query
         /// <param name="type">
         /// runtime type of expression 
         /// </param>
-        /// <param name="expression">
+        /// <param name="sourceExpression">
         /// base expression
         /// </param>
         /// <param name="keyLambdaExpression">
@@ -630,16 +700,16 @@ namespace LinqToDAX.Query
         /// <returns>
         /// Transformed group by expression
         /// </returns>
-        private Expression BindGroupBy(Type type, Expression expression, LambdaExpression keyLambdaExpression, LambdaExpression elementlambda, LambdaExpression resultlambda)
+        private Expression BindGroupBy(Type type, Expression sourceExpression, LambdaExpression keyLambdaExpression, LambdaExpression elementlambda, LambdaExpression resultlambda)
         {
             ProjectionExpression projection;
-            if (expression is ProjectionExpression)
+            if (sourceExpression is ProjectionExpression)
             {
-                projection = expression as ProjectionExpression;
+                projection = sourceExpression as ProjectionExpression;
             }
             else
             {
-                projection = (ProjectionExpression)Visit(expression);
+                projection = (ProjectionExpression)Visit(sourceExpression);
             }
 
             _parameterMap[keyLambdaExpression.Parameters[0]] = projection.Projector;
@@ -665,39 +735,13 @@ namespace LinqToDAX.Query
 
             if (elementlambda != null)
             {
-                ProjectedColumns elementColumns ;
+                _parameterMap[elementlambda.Parameters[0]] = projection.Projector;
+                var elements = Visit(elementlambda.Body);
+                ProjectedColumns elementColumns = ProjectColumns(elements);
+
+                subQueryProjection = new ProjectionExpression(elementlambda.Body.Type, projection,
+                    elementColumns.Projector);
                 
-                /// with result selector
-                if (elementlambda.Parameters.Count == 2)
-                {
-                    _parameterMap[elementlambda.Parameters[0]] = keyProjection.Projector;
-                    _parameterMap[elementlambda.Parameters[1]] = projection;
-                    var elements = Visit(elementlambda.Body);
-                    elementColumns = ProjectColumns(elements);
-
-                    return new ProjectionExpression(
-                        DaxExpressionFactory.Create(
-                            type, 
-                            keyColumns.Columns.Union(elementColumns.Columns).Distinct(),
-                            projection.Source)
-                       , elementColumns.Projector);
-
-                    return DaxExpressionFactory.Create(type, keyColumns.Columns.Union(elementColumns.Columns),
-                        elementColumns.Projector);
-
-                    subQueryProjection = new ProjectionExpression(elementlambda.Body.Type, projection,
-                        elementColumns.Projector);
-                }
-                /// Only element selector
-                else
-                {
-                    _parameterMap[elementlambda.Parameters[0]] = projection.Projector;
-                    var elements = Visit(elementlambda.Body);
-                    elementColumns = ProjectColumns(elements);
-
-                    subQueryProjection = new ProjectionExpression(elementlambda.Body.Type, projection,
-                        elementColumns.Projector);
-                }
 
 
                 if (resultlambda != null)
@@ -712,6 +756,21 @@ namespace LinqToDAX.Query
             }
             else
             {
+                if (resultlambda != null)
+                {
+                    _parameterMap[resultlambda.Parameters[0]] = keyProjection.Projector;
+                    _parameterMap[resultlambda.Parameters[1]] = projection;
+                    var results = Visit(resultlambda.Body);
+                    var resultColumns = ProjectColumns(results);
+
+                    return new ProjectionExpression(
+                        DaxExpressionFactory.Create(
+                            type, 
+                            keyColumns.Columns.Union(resultColumns.Columns).Distinct(),
+                            projection.Source)
+                       , resultColumns.Projector);
+                }
+
                 subQueryProjection = projection;   
             }
             
@@ -729,7 +788,24 @@ namespace LinqToDAX.Query
         {
             var bound = Visit(expression);
             ProjectionExpression projection = null;
-            var columns = new List<ColumnDeclaration>();
+
+            //Include order by columns
+            var columns = _orderBys.Select(c =>
+            {
+                var m = c.Item1 as MeasureExpression;
+                if (m != null)
+                {
+                    return new MeasureDeclaration(m.Name, m.Alias, m);
+                }
+
+                var col = c.Item1 as ColumnExpression;
+                if (col != null)
+                {
+                    return new ColumnDeclaration(col.Name, col.DbName, c.Item1);
+                }
+                return null;
+            }).Where(x => x != null).ToList();
+
             switch ((DaxExpressionType) bound.NodeType)
             {
                 case DaxExpressionType.Projection:
@@ -755,7 +831,6 @@ namespace LinqToDAX.Query
                     var p = (ProjectionExpression) body;
                     ProjectedColumns pc1 =
                         new ColumnProjector(TabularExpressionHelper.CanBeColumn).ProjectColumns(p.Projector);
-
                     var summarize = new ProjectionExpression(
                         new SummarizeExpression(p.Type, pc1.Columns, projection.Source),
                         p.Projector);

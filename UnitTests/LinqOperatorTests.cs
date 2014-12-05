@@ -7,6 +7,7 @@ using AdventureWorks;
 using FluentAssertions;
 using LinqToDAX;
 using LinqToDAX.Query;
+using NUnit.Core;
 using NUnit.Framework;
 using System;
 using System.Linq;
@@ -111,7 +112,7 @@ namespace UnitTests
                                 .Where(x => x.TotalChildren > 1)
                                 .Take(10)
                                 .Sum(y => 2 * y.TotalCarsOwned)
-                    //Sum4 = g
+                    //,Sum4 = g
                 };
 
             var res = q.ToList();
@@ -365,77 +366,78 @@ namespace UnitTests
                 select d.SalesTerritoryCountry
                 );
         }
-        /*
+        
         public void TestOrderBy()
         {
             TestQuery(
-                db.Customers.OrderBy(c => c.CustomerID)
+                _db.CustomerSet.OrderBy(c => c.TotalCarsOwned)
                 );
         }
 
         public void TestOrderBySelect()
         {
             TestQuery(
-                db.Customers.OrderBy(c => c.CustomerID).Select(c => c.ContactName)
+                _db.CustomerSet.OrderBy(c => c.CustomerKey).Select(c => c.LastName)
                 );
         }
 
         public void TestOrderByOrderBy()
         {
             TestQuery(
-                db.Customers.OrderBy(c => c.CustomerID).OrderBy(c => c.Country).Select(c => c.City)
+                _db.CustomerSet.OrderBy(c => c.CustomerId).OrderBy(c => c.LastName).Select(c => c.FirstName)
                 );
         }
 
         public void TestOrderByThenBy()
         {
             TestQuery(
-                db.Customers.OrderBy(c => c.CustomerID).ThenBy(c => c.Country).Select(c => c.City)
+                _db.CustomerSet.OrderBy(c => c.CustomerId).ThenBy(c => c.LastName).Select(c => c.FirstName)
                 );
         }
 
         public void TestOrderByDescending()
         {
             TestQuery(
-                db.Customers.OrderByDescending(c => c.CustomerID).Select(c => c.City)
+                _db.CustomerSet.OrderByDescending(c => c.CustomerId).Select(c => c.LastName)
                 );
         }
 
         public void TestOrderByDescendingThenBy()
         {
             TestQuery(
-                db.Customers.OrderByDescending(c => c.CustomerID).ThenBy(c => c.Country).Select(c => c.City)
+                _db.CustomerSet.OrderByDescending(c => c.CustomerId).ThenBy(c => c.LastName).Select(c => c.FirstName)
                 );
         }
 
         public void TestOrderByDescendingThenByDescending()
         {
             TestQuery(
-                db.Customers.OrderByDescending(c => c.CustomerID).ThenByDescending(c => c.Country).Select(c => c.City)
+                _db.CustomerSet.OrderByDescending(c => c.LastName).ThenByDescending(c => c.FirstName).Select(c => c.AddressLine1)
                 );
         }
 
-        public void TestOrderByJoin()
-        {
-            TestQuery(
-                from c in db.Customers.OrderBy(c => c.CustomerID)
-                join o in db.Orders.OrderBy(o => o.OrderID) on c.CustomerID equals o.CustomerID
-                select new { c.CustomerID, o.OrderID }
-                );
-        }
+        //public void TestOrderByJoin()
+        //{
+        //    TestQuery(
+        //        from c in db.Customers.OrderBy(c => c.CustomerID)
+        //        join o in db.Orders.OrderBy(o => o.OrderID) on c.CustomerID equals o.CustomerID
+        //        select new { c.CustomerID, o.OrderID }
+        //        );
+        //}
 
-        public void TestOrderBySelectMany()
-        {
-            TestQuery(
-                from c in db.Customers.OrderBy(c => c.CustomerID)
-                from o in db.Orders.OrderBy(o => o.OrderID)
-                where c.CustomerID == o.CustomerID
-                select new { c.ContactName, o.OrderID }
-                );
-        }
-        */
+        //public void TestOrderBySelectMany()
+        //{
+        //    TestQuery(
+        //        from c in _db.CustomerSet.OrderBy(c => c.CustomerID)
+        //        from o in _db.InternetSalesSet.OrderBy(o => o.OrderID)
+        //        where c.CustomerID == o.CustomerID
+        //        select new { c.ContactName, o.OrderID }
+        //        );
+        //}
+        
 
         [Test]
+        [ExpectedException(typeof(TabularException))]
         public void TestGroupBy()
         {
             TestQuery(
@@ -502,8 +504,8 @@ namespace UnitTests
                     {
                         Sum = g.Sum(o => o.OrderQuantity),
                         Min = g.Min(o => o.OrderQuantity),
-                        Max = g.Max(o => o.OrderQuantity)
-                        //Avg = g.Average(o => o.OrderQuantity)
+                        Max = g.Max(o => o.OrderQuantity),
+                        Avg = g.Average(o => o.OrderQuantity)
                     })
                 );
         }
@@ -518,6 +520,7 @@ namespace UnitTests
         }
 
         [Test]
+        [ExpectedException(typeof(TabularException))]
         public void TestGroupByWithElementSelector()
         {
             // note: groups are retrieved through a separately execute subquery per row
@@ -553,140 +556,120 @@ namespace UnitTests
                 );
         }
 
-        /*
-        public void TestOrderByGroupBy()
-        {
-            // note: order-by is lost when group-by is applied (the sequence of groups is not ordered)
-            TestQuery(
-                db.Orders.OrderBy(o => o.OrderID).GroupBy(o => o.CustomerID).Select(g => g.Sum(o => o.OrderID))
-                );
-        }
-       
-        public void TestOrderByGroupBySelectMany()
-        {
-            // note: order-by is preserved within grouped sub-collections
-            TestQuery(
-                db.Orders.OrderBy(o => o.OrderID).GroupBy(o => o.CustomerID).SelectMany(g => g)
-                );
-        }
-        */
-        /*
-        public void TestSumWithNoArg()
-        {
-            TestQuery(
-                () => db.Orders.Select(o => o.OrderID).Sum()
-                );
-        }
+        //[Test]
+        //public void TestSumWithNoArg()
+        //{
+        //    TestQuery(
+        //        () => _db.InternetSalesSet.Select(o => o.SalesAmount).Sum()
+        //        );
+        //}
 
-        public void TestSumWithArg()
-        {
-            TestQuery(
-                () => db.Orders.Sum(o => o.OrderID)
-                );
-        }
-        */
-        /*
-        public void TestCountWithNoPredicate()
-        {
-            TestQuery(
-                () => db.Orders.Count()
-                );
-        }
+        //[Test]
+        //public void TestSumWithArg()
+        //{
+        //    TestQuery(
+        //        () => _db.InternetSalesSet.Sum(o => o.SalesAmount)
+        //        );
+        //}
+        
+        //[Test]
+        //public void TestCountWithNoPredicate()
+        //{
+        //    TestQuery(
+        //        () => _db.InternetSalesSet.Count()
+        //        );
+        //}
 
-        public void TestCountWithPredicate()
-        {
-            TestQuery(
-                () => db.Orders.Count(o => o.CustomerID == "ALFKI")
-                );
-        }
+        //[Test]
+        //public void TestCountWithPredicate()
+        //{
+        //    TestQuery(
+        //        () => _db.InternetSalesSet.Count(o => o.RelatedCustomer.LastName == "ALFKI")
+        //        );
+        //}
 
+        [Test]
         public void TestDistinct()
         {
             TestQuery(
-                db.Customers.Distinct()
+                _db.CustomerSet.Distinct()
                 );
         }
 
+        [Test]
         public void TestDistinctScalar()
         {
             TestQuery(
-                db.Customers.Select(c => c.City).Distinct()
+                _db.CustomerSet.Select(c => c.RelatedGeography.City).Distinct()
                 );
         }
 
+        [Test]
         public void TestOrderByDistinct()
         {
             TestQuery(
-                db.Customers.OrderBy(c => c.CustomerID).Select(c => c.City).Distinct()
+                _db.CustomerSet.OrderBy(c => c.CustomerKey).Select(c => new {c.RelatedGeography.City }).Distinct()
                 );
         }
 
+        [Test]
         public void TestDistinctOrderBy()
         {
             TestQuery(
-                db.Customers.Select(c => c.City).Distinct().OrderBy(c => c)
+                _db.CustomerSet.Select(c => c.RelatedGeography.City).Distinct().OrderBy(c => c)
                 );
         }
 
-        public void TestDistinctGroupBy()
-        {
-            TestQuery(
-                db.Orders.Distinct().GroupBy(o => o.CustomerID)
-                );
-        }
+        //[Test]
+        //public void TestDistinctCount()
+        //{
+        //    TestQuery(
+        //        () => _db.CustomerSet.Distinct().Count()
+        //        );
+        //}
 
-        public void TestGroupByDistinct()
-        {
-            TestQuery(
-                db.Orders.GroupBy(o => o.CustomerID).Distinct()
-                );
+        //[Test]
+        //public void TestSelectDistinctCount()
+        //{
+        //    // cannot do: SELECT COUNT(DISTINCT some-colum) FROM some-table
+        //    // because COUNT(DISTINCT some-column) does not count nulls
+        //    TestQuery(
+        //        () => _db.CustomerSet.Select(c => c.RelatedGeography.City).Distinct().Count()
+        //        );
+        //}
 
-        }
+        //[Test]
+        //public void TestSelectSelectDistinctCount()
+        //{
+        //    TestQuery(
+        //        () => db.Customers.Select(c => c.City).Select(c => c).Distinct().Count()
+        //        );
+        //}
 
-        public void TestDistinctCount()
-        {
-            TestQuery(
-                () => db.Customers.Distinct().Count()
-                );
-        }
+        // [Test]
+        //public void TestDistinctCountPredicate()
+        //{
+        //    TestQuery(
+        //        () => db.Customers.Distinct().Count(c => c.CustomerID == "ALFKI")
+        //        );
+        //}
 
-        public void TestSelectDistinctCount()
-        {
-            // cannot do: SELECT COUNT(DISTINCT some-colum) FROM some-table
-            // because COUNT(DISTINCT some-column) does not count nulls
-            TestQuery(
-                () => db.Customers.Select(c => c.City).Distinct().Count()
-                );
-        }
+        //[Test]
+        //public void TestDistinctSumWithArg()
+        //{
+        //    TestQuery(
+        //        () => db.Orders.Distinct().Sum(o => o.OrderID)
+        //        );
+        //}
 
-        public void TestSelectSelectDistinctCount()
-        {
-            TestQuery(
-                () => db.Customers.Select(c => c.City).Select(c => c).Distinct().Count()
-                );
-        }
-
-        public void TestDistinctCountPredicate()
-        {
-            TestQuery(
-                () => db.Customers.Distinct().Count(c => c.CustomerID == "ALFKI")
-                );
-        }
-
-        public void TestDistinctSumWithArg()
-        {
-            TestQuery(
-                () => db.Orders.Distinct().Sum(o => o.OrderID)
-                );
-        }
-
-        public void TestSelectDistinctSum()
-        {
-            TestQuery(
-                () => db.Orders.Select(o => o.OrderID).Distinct().Sum()
-                );
-        }
-        */
+        //[Test]
+        //public void TestSelectDistinctSum()
+        //{
+        //    TestQuery(
+        //        () => db.Orders.Select(o => o.OrderID).Distinct().Sum()
+        //        );
+        //}
+        
 
         [Test]
         public void TestTake()
@@ -696,12 +679,12 @@ namespace UnitTests
                 );
         }
 
-        /*
+        
         public void TestTakeDistinct()
         {
             // distinct must be forced to apply after top has been computed
             TestQuery(
-                db.Orders.Take(5).Distinct()
+                 _db.InternetSalesSet.Take(5).Distinct()
                 );
         }
 
@@ -709,51 +692,51 @@ namespace UnitTests
         {
             // top must be forced to apply after distinct has been computed
             TestQuery(
-                db.Orders.Distinct().Take(5)
+                 _db.InternetSalesSet.Distinct().Take(5)
                 );
         }
 
-        public void TestDistinctTakeCount()
-        {
-            TestQuery(
-                () => db.Orders.Distinct().Take(5).Count()
-                );
-        }
+        //public void TestDistinctTakeCount()
+        //{
+        //    TestQuery(
+        //        () =>  _db.InternetSalesSet.Distinct().Take(5).Count()
+        //        );
+        //}
 
-        public void TestTakeDistinctCount()
-        {
-            TestQuery(
-                () => db.Orders.Take(5).Distinct().Count()
-                );
-        }
+        //public void TestTakeDistinctCount()
+        //{
+        //    TestQuery(
+        //        () => db.Orders.Take(5).Distinct().Count()
+        //        );
+        //}
 
-        [ExcludeProvider("Access")]
-        [ExcludeProvider("SqlCe")]
-        public void TestSkip()
-        {
-            TestQuery(
-                db.Customers.OrderBy(c => c.ContactName).Skip(5)
-                );
-        }
+        //[ExcludeProvider("Access")]
+        //[ExcludeProvider("SqlCe")]
+        //public void TestSkip()
+        //{
+        //    TestQuery(
+        //        db.Customers.OrderBy(c => c.ContactName).Skip(5)
+        //        );
+        //}
 
-        [ExcludeProvider("Access")]
-        [ExcludeProvider("SqlCe")]
-        public void TestTakeSkip()
-        {
-            TestQuery(
-                db.Customers.OrderBy(c => c.ContactName).Take(10).Skip(5)
-                );
-        }
+        //[ExcludeProvider("Access")]
+        //[ExcludeProvider("SqlCe")]
+        //public void TestTakeSkip()
+        //{
+        //    TestQuery(
+        //        db.Customers.OrderBy(c => c.ContactName).Take(10).Skip(5)
+        //        );
+        //}
 
-        [ExcludeProvider("Access")]
-        [ExcludeProvider("SqlCe")]
-        public void TestDistinctSkip()
-        {
-            TestQuery(
-                db.Customers.Distinct().OrderBy(c => c.ContactName).Skip(5)
-                );
-        }
-
+        //[ExcludeProvider("Access")]
+        //[ExcludeProvider("SqlCe")]
+        //public void TestDistinctSkip()
+        //{
+        //    TestQuery(
+        //        db.Customers.Distinct().OrderBy(c => c.ContactName).Skip(5)
+        //        );
+        //}
+        /*
         public void TestSkipTake()
         {
             TestQuery(

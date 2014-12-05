@@ -73,6 +73,7 @@
     <Compile Include="Query\TabularQueryBinder.cs" />
     <Compile Include="Query\TabularQueryExtensions.cs" />
     <Compile Include="QueryFormatter\TabularQueryFormatter.cs" />
+    <Compile Include="TabularGrouping.cs" />
     <Compile Include="TabularQueryProvider.cs" />
     <Compile Include="TabularTable.cs" />
     <Compile Include="TypeSystem.cs" />

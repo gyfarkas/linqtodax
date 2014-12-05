@@ -165,9 +165,9 @@ namespace LinqToDAX
             var groupQuery = expression as GroupingProjection;
             if (groupQuery != null)
             {
-                throw new TabularException("no grouping yet");
-                var query = new TabularGroupByRewriter(groupQuery).Rewrite();
-                return Translate(query);
+                throw new TabularException("Can't Return groups from group by you must use aggregates, or retrieve the complete table and run groupng in Linq to objects");
+                ////var query = new TabularGroupByRewriter(groupQuery).Rewrite();
+                ////return Translate(query);
                 
             }
             if (subQuery != null)
@@ -175,11 +175,21 @@ namespace LinqToDAX
                 projection = subQuery.Projection;
             }
             expression = TabularEvaluator.PartialEval(expression);
-            var boundExpression = new TabularQueryBinder(this).Bind(expression);
+            var binder = new TabularQueryBinder(this);
+            var boundExpression = binder.Bind(expression);
+            var orders = binder.OrderByColumns;
 
             if (projection == null && subQuery == null)
             {
-               return Translate(boundExpression);
+                if (boundExpression is ProjectionExpression)
+                {
+                    projection = (ProjectionExpression) boundExpression;
+                }
+
+                else
+                {
+                    return Translate(boundExpression);
+                }
             }
 
             if (projection == null)
@@ -188,7 +198,7 @@ namespace LinqToDAX
                 throw new TabularException("Could not translate");
             }
 
-            string commandText = new TabularQueryFormatter().Format(projection.Source);
+            string commandText = new TabularQueryFormatter().Format(projection.Source, orders);
             
             LambdaExpression projector = new ProjectionBuilder().Build(projection.Projector);
             return 

@@ -937,23 +937,19 @@ namespace UnitTests
 
 
         [Test]
-        [Ignore]
         public void OrderbyTest()
         {
             var q =
                 from customer in _db.CustomerSet
-                orderby customer.LastName
+                orderby customer.LastName, customer.MaritalStatus
                 select new
                 {
                     customer.LastName,
                     customer.FirstName,
                     Sum = customer.Internet_Total_Sales()
                 };
-            q.OrderBy(x => x.LastName)
-                .ThenBy(x => x.LastName)
-                .ThenByDescending(x => x.Sum)
-                .ToList()
-                .Should()
+            var res = q.ToList();
+                res.Should()
                 .NotBeNull();
 
         }
