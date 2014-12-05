@@ -888,7 +888,8 @@ namespace UnitTests
                 select customer.CustomerKey).CountRows();
 
             res.Should().NotBeNull();
-            count.Should().Be(res.First().C);
+            count.Should().Be(res.First().C); 
+
         }
 
 
@@ -940,17 +941,21 @@ namespace UnitTests
         public void OrderbyTest()
         {
             var q =
+                from s in _db.InternetSalesSet
                 from customer in _db.CustomerSet
-                orderby customer.LastName, customer.MaritalStatus
                 select new
                 {
                     customer.LastName,
                     customer.FirstName,
-                    Sum = customer.Internet_Total_Sales()
+                    Sum = s.SalesAmount.Sum()
                 };
-            var res = q.ToList();
+
+            var res1 = q.ToList().Select(x => x.Sum).OrderBy(x => x);
+
+            var res = q.Select(x => x.Sum).OrderBy(x => x).ToList();
                 res.Should()
                 .NotBeNull();
+            res1.First().Should().Be(res.First());
 
         }
 

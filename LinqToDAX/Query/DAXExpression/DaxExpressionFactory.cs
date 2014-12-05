@@ -6,6 +6,10 @@
 //   Extended expression type list to inherit from <cref ns="Linq.Expression" />
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
+
+using System.Collections.ObjectModel;
+using System.Reflection;
+
 namespace LinqToDAX.Query.DAXExpression
 {
     using System;
@@ -44,6 +48,22 @@ namespace LinqToDAX.Query.DAXExpression
 
             var columnList = columns.ToList();
             var measures = columnList.Where(x => x is MeasureDeclaration).ToList();
+
+            switch ((DaxExpressionType)maintable.NodeType)
+            {
+                case DaxExpressionType.Summarize:
+                    var cs = ((SummarizeExpression)maintable).Columns;
+                    maintable = ((SummarizeExpression)maintable).MainTable;
+
+                    columnList = columnList.Union(cs).ToList();
+                    break;
+                case DaxExpressionType.AddColumns:
+                    var cs1 = ((AddColumnsExpression)maintable).Columns.Select(c => c);
+                    measures = cs1.ToList();
+                    maintable = ((AddColumnsExpression)maintable).MainTable;
+                    columnList = columnList.Union(measures).ToList();
+                    break;
+            }
             if (columnList.Distinct().Count() == 1)
             {
                 var theColumn = columnList.FirstOrDefault();
@@ -60,6 +80,7 @@ namespace LinqToDAX.Query.DAXExpression
 
             if (measures.Any())
             {
+               
                 var summarize = Create(
                     type,
                     columnList.Where(c => !(c is MeasureDeclaration)).Distinct(),

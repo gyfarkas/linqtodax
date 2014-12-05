@@ -832,7 +832,7 @@ namespace LinqToDAX.Query
                     ProjectedColumns pc1 =
                         new ColumnProjector(TabularExpressionHelper.CanBeColumn).ProjectColumns(p.Projector);
                     var summarize = new ProjectionExpression(
-                        new SummarizeExpression(p.Type, pc1.Columns, projection.Source),
+                        DaxExpressionFactory.Create(p.Type,pc1.Columns,projection.Source),
                         p.Projector);
 
                     if (lambdaExpression.ReturnType.Name.Contains("IQueryable"))
@@ -840,7 +840,8 @@ namespace LinqToDAX.Query
                         var elementType = TypeSystem.GetElementType(lambdaExpression.ReturnType);
                         var t = typeof(IQueryable<>).MakeGenericType(lambdaExpression.ReturnType);
                         var subquery = new SubQueryProjection(lambdaExpression.ReturnType, p);
-                        return new ProjectionExpression(new SummarizeExpression(t,new List<ColumnDeclaration>().AsReadOnly(), projection.Source),subquery);
+                        return new ProjectionExpression(
+                            DaxExpressionFactory.Create(t,new List<ColumnDeclaration>().AsReadOnly(), projection.Source),subquery);
                     }
                     
                     return summarize;
