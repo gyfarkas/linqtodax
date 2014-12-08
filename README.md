@@ -1,4 +1,5 @@
 linqtodax
 =========
 
-linq provider for ssas tabular dax lanquage
+Linq provider for ssas tabular dax language (Migrating from codeplex)
+Documentation is on linqtodax.codeplex.com 
